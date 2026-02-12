@@ -1,0 +1,91 @@
+"""
+output.py
+Provides the functions for writing the summary and sequence-level classification results to output files.
+"""
+
+import os 
+import re
+import sys
+import argparse
+import numpy as np
+from datetime import datetime
+from collections import Counter, defaultdict
+from ete3 import Tree
+
+def write_summary(summary_file, focal_species, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, outgroup_names, run_metrics, sequence_classifications):
+    with open(summary_file, 'w') as f:
+        f.write("PhyloScreen Classification Summary\n")
+        f.write("=" * 60 + "\n\n")
+        
+        f.write("Parameters:\n")
+        f.write(f"  Focal species:       {focal_species} ({focal_group})\n")
+        f.write(f"  Min support:         {min_support}\n")
+        f.write(f"  Min target purity:   {min_target_purity}\n")
+        f.write(f"  Max contam purity:   {max_contaminant_purity}\n")
+        f.write(f"  Collapse threshold:  {collapse_threshold}\n")
+        f.write(f"  Outgroups:           {', '.join(outgroup_names)}\n\n")
+        
+        f.write("Processing Stats:\n")
+        f.write(f"  Total trees:             {run_metrics['total_trees']}\n")
+        f.write(f"  Trees with no focal species:        {run_metrics['no_focal_species_in_tree']}\n")
+        f.write(f"  Errors:                  {run_metrics['total_errors']}\n")
+        f.write(f"  Total nodes collapsed:   {run_metrics['total_nodes_collapsed']}\n")
+        f.write(f"  Total sequences classified:  {run_metrics['total_sequences_classified']}\n\n")
+
+        if sequence_classifications:
+            sequence_counts = Counter(sequence_classifications.values())
+            f.write("Classification Summary:\n")
+            f.write("-" * 40 + "\n")
+            for label in ["TARGET", "CONTAMINANT", "FLAG"]:
+                count = sequence_counts.get(label, 0)
+                pct = (count / len(sequence_classifications)) * 100.0
+                f.write(f"  {label:12s}: {count:5d} ({pct:5.1f}%)\n")
+            f.write("\n")
+
+    print(f"\nSummary written to {summary_file}")
+
+def write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics):
+    with open(sequence_classifications_file, 'w') as f:
+        header = [
+            "OG_ID", "Gene_Name", "Classification", "Bootstrap", "Clade_Target_Group_Fraction", 
+            "Total_Leaves", "Focal_Group", "Focal_Group_Leaves",
+            "Same_Species_In_Clade", "Has_Other_Focal_Group_In_Clade",
+            "Has_Other_Focal_Species_In_Clade", "Has_Outgroup_In_Clade",
+            "Is_Long_Branch", "Confidence_Notes"
+        ]
+        f.write("\t".join(header) + "\n")
+        
+        for sequence_key in sorted(sequence_classifications.keys()):
+            og_id, sequence_name = sequence_key.split("::", 1)
+            m = sequence_metrics[sequence_key]
+            row = [
+                og_id,
+                sequence_name,
+                sequence_classifications[sequence_key],
+                str(m["bootstrap"]),
+                f"{m['clade_target_group_fraction']:.4f}",
+                str(m["total_leaves"]),
+                str(m["focal_group"]),
+                str(m["focal_group_leaves"]),
+                str(m["focal_species_in_clade"]),
+                str(m["has_other_focal_group_leaves_in_clade"]),
+                str(m["has_other_focal_species_leaves_in_clade"]),
+                str(m["has_outgroup_in_clade"]),
+                str(m["is_on_long_branch"]),
+                ";".join(m["classification_notes"])
+            ]
+            f.write("\t".join(row) + "\n")
+
+    print(f"Classification results written to {sequence_classifications_file}")
+
+def write_sequence_lists(sequence_lists_dir, sequence_classifications):
+    os.makedirs(sequence_lists_dir, exist_ok=True)
+
+    for label in ["TARGET", "CONTAMINANT", "FLAG"]:
+        list_file = os.path.join(sequence_lists_dir, f"{label.lower()}_sequences.txt")
+        with open(list_file, 'w') as f:
+            for sequence_key in sorted(sequence_classifications.keys()):
+                if sequence_classifications[sequence_key] == label:
+                    og_id, sequence_name = sequence_key.split("::", 1)
+                    f.write(f"{og_id}\t{sequence_name}\n")
+        print(f"{label} classification list written to {list_file}")
