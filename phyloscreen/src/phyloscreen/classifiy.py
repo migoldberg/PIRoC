@@ -106,10 +106,7 @@ def classify_sequence(
     min_support, 
     min_target_purity, 
     max_contaminant_purity, 
-    outgroup_names,
-    remove_contaminants,
-    og_id,
-    output_dir
+    outgroup_names
     ):
 
     if outgroup_names is None:
@@ -175,16 +172,6 @@ def classify_sequence(
             classification_notes.append("intermediate_target_group_fraction")
         if sequence_on_long_branch:
             classification_notes.append("long_branch_detected")
-
-    if remove_contaminants:
-        if classification == "CONTAMINANT":
-            sequence.detach()
-
-            clean_tree_dir = os.path.join(output_dir, "cleaned_trees")
-            os.makedirs(clean_tree_dir, exist_ok=True)
-            clean_tree_path = os.path.join(clean_tree_dir, f"{og_id}.tre")
-            tree.write(format=1, outfile=clean_tree_path)
-
     
     metrics = {
         "sequence_name": sequence_name,

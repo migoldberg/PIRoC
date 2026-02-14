@@ -21,6 +21,7 @@ from .support import collapse_low_support_nodes
 from .branch_length import compute_branch_length_stats
 from .classifiy import classify_sequence
 from .output import write_summary, write_sequence_classifications, write_sequence_lists
+from .clean_trees import clean_trees
 
 def main():
     params = init_cli()
@@ -119,10 +120,7 @@ def main():
                     min_support = min_support,
                     min_target_purity = min_target_purity,
                     max_contaminant_purity = max_contaminant_purity,
-                    outgroup_names = outgroup_names,
-                    remove_contaminants = remove_contaminants,
-                    og_id = og_id,
-                    output_dir = output_dir
+                    outgroup_names = outgroup_names
                 )
 
                 sequence_name = sequence.name
@@ -148,6 +146,9 @@ def main():
         except Exception as e:
             print(f"error: {e}")
             run_metrics['total_errors'] += 1
+
+    if remove_contaminants:
+        clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir)
 
     # Write output summary
     summary_file = os.path.join(output_dir, "classification_summary.txt")
