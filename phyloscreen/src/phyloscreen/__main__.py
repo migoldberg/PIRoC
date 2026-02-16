@@ -32,7 +32,6 @@ def main():
     tree_dir = params["tree_dir"]
     tree_suffix = params["tree_suffix"]
     output_dir = params["output_dir"]
-    sequence_classifications_dir = params["sequence_classifications_dir"]
     focal_species = params["focal_species"]
     focal_group = params["focal_group"]
     species_to_group = params["species_to_group"]
@@ -44,8 +43,8 @@ def main():
     remove_contaminants = params["remove_contaminants"]
     debug = params["debug"]
 
-    sequence_classifications = {} # og_id::gene_name -> classification
-    sequence_metrics = {} # og_id::gene_name -> metrics
+    sequence_classifications = {} # og_id::sequence_name -> classification
+    sequence_metrics = {} # og_id::sequence_name -> metrics
 
     run_metrics = {
         'no_focal_species_in_tree': 0,
