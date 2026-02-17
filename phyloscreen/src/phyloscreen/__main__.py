@@ -87,7 +87,7 @@ def main():
             t, rooted = root_tree_at_outgroup(t, outgroup_leaves)
             
             
-            nodes_collapsed = collapse_low_support_nodes(t, collapse_threshold)
+            t, nodes_collapsed = collapse_low_support_nodes(t, collapse_threshold)
             branch_length_stats = compute_branch_length_stats(t)
 
             focal_leaves = [
@@ -147,7 +147,7 @@ def main():
             run_metrics['total_errors'] += 1
 
     if remove_contaminants:
-        clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir)
+        clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold)
 
     # Write output summary
     summary_file = os.path.join(output_dir, "classification_summary.txt")

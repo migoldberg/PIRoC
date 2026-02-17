@@ -4,10 +4,6 @@ Attempts to root the tree at an outgroup if possible.
 """
 
 from inspect import ismodule
-import os 
-import re
-import sys
-import argparse
 import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict

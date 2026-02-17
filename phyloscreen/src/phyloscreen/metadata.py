@@ -6,12 +6,10 @@ Provides the functions and helper functions for loading and using the species me
 import os 
 import re
 import sys
-import argparse
 import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict
 from ete3 import Tree
-
 
 def load_species_metadata(metadata_path):
     species_to_group = {}

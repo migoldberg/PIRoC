@@ -3,10 +3,6 @@ branch_length.py
 Provides functions for identifying sequences occuring on long branches in the tree.
 """
 
-import os 
-import re
-import sys
-import argparse
 import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict

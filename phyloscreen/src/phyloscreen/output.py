@@ -4,9 +4,6 @@ Provides the functions for writing the summary and sequence-level classification
 """
 
 import os 
-import re
-import sys
-import argparse
 import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict
