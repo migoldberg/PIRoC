@@ -11,7 +11,7 @@ from ete3 import Tree
 
 def write_summary(summary_file, focal_species, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, outgroup_names, run_metrics, sequence_classifications):
     with open(summary_file, 'w') as f:
-        f.write("PhyloScreen Classification Summary\n")
+        f.write("PIRoC Classification Summary\n")
         f.write("=" * 60 + "\n\n")
         
         f.write("Parameters:\n")

@@ -22,7 +22,7 @@ class Logger:
         self.terminal = sys.stdout
         self.log_file = open(log_path, 'w')
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.log_file.write(f"PhyloScreen Log - {timestamp}\n")
+        self.log_file.write(f"PIRoC Log - {timestamp}\n")
         self.log_file.write("=" * 50 + "\n\n")
         self.log_file.flush()
 
@@ -40,7 +40,7 @@ class Logger:
 
 def init_cli() -> None:
     parser = argparse.ArgumentParser(
-        description="PhyloScreen: Phylogeny-based orthogroup classification (TARGET / CONTAMINANT / FLAG)"
+        description="PIRoC: Phylogeny-based orthogroup classification (TARGET / CONTAMINANT / FLAG)"
     )
     parser.add_argument(
         "-t", "--tree_dir", required=True,
@@ -51,8 +51,8 @@ def init_cli() -> None:
         help="Tree filename suffix (default: .tre)"
     )
     parser.add_argument(
-        "-o", "--output_dir", default="phyloscreen_output",
-        help="Output directory (default: phyloscreen_output)"
+        "-o", "--output_dir", default="PIRoC_output",
+        help="Output directory (default: PIRoC_output)"
     )
     parser.add_argument(
         "-f", "--focal_species", required=True,
@@ -107,7 +107,7 @@ def init_cli() -> None:
     sequence_classifications_dir = os.path.join(output_dir, "sequence_classifications")
     os.makedirs(sequence_classifications_dir, exist_ok=True)
 
-    log_path = os.path.join(output_dir, "phyloscreen.log")
+    log_path = os.path.join(output_dir, "PIRoC.log")
     logger = Logger(log_path)
     sys.stdout = logger
 

@@ -8,7 +8,7 @@ readme_path = ROOT / "README.md"
 long_description = readme_path.read_text(encoding="utf-8") if readme_path.exists() else ""
 
 setup(
-    name="phyloscreen",
+    name="PIRoC",
     version="0.1.0",
     author="Mark Goldberg",
     license="MIT",
@@ -17,12 +17,12 @@ setup(
     ),
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    entry_points={"console_scripts": ["phyloscreen = phyloscreen.__main__:main"]},
+    entry_points={"console_scripts": ["PIRoC = PIRoC.__main__:main"]},
     install_requires=["ete3>=3.1.0"],
     python_requires=">=3.8",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/markgoldberg11/dev-phyloscreen",
+    url="https://github.com/markgoldberg11/dev-PIRoC",
     keywords=[
         "bioinformatics",
         "phylogenetics",

@@ -1,0 +1,2 @@
+[console_scripts]
+PIRoC = PIRoC.__main__:main
