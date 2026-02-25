@@ -1,4 +1,3 @@
 # PIRoC
-# Phylogeny-Informed Removal of Contaminants
-
-A tool for detection and removal of contaminants in inverterbrate transcriptomes using phylogenetic trees.
+Phylogeny-Informed Removal of Contaminants
+By Mark I. Goldberg, Nickellaus G. Roberts, Kevin M. Kocot

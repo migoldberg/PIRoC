@@ -39,6 +39,9 @@ class Logger:
         self.log_file.close()
 
 def init_cli() -> None:
+    """
+    Returns/Loads all informatoin from the CLI for the run.
+    """
     parser = argparse.ArgumentParser(
         description="PIRoC: Phylogeny-based orthogroup classification (TARGET / CONTAMINANT / FLAG)"
     )
@@ -91,6 +94,7 @@ def init_cli() -> None:
         help="Enable debug mode"
     )
 
+    # parses the arguments
     args = parser.parse_args()
 
     tree_dir = args.tree_dir
@@ -101,30 +105,40 @@ def init_cli() -> None:
     outgroups = set(args.outgroups.split(","))
     remove_contaminants = args.remove_contaminants
     debug = args.debug
-    
+
+    # creates the output directory
     os.makedirs(output_dir, exist_ok=True)
 
+    # creates the directory for sequence classifications
     sequence_classifications_dir = os.path.join(output_dir, "sequence_classifications")
     os.makedirs(sequence_classifications_dir, exist_ok=True)
 
+    # creates the log file
     log_path = os.path.join(output_dir, "PIRoC.log")
     logger = Logger(log_path)
     sys.stdout = logger
 
+    # loads the species to group dictionary from the metadata file
     species_to_group = load_species_metadata(metadata_path)
 
+    # if the species to group dictionary is empty or improperly formatted then an error is raised
     if not species_to_group:
         raise ValueError("Metadata file is empty or improperly formatted.")
 
+    # if the focal species provided in the arguments is not found in the species to group dictionary then an error is raised
     if focal_species not in species_to_group:
         raise ValueError(f"Focal species '{focal_species}' not found in metadata.")
 
+    # gets the focal group for the focal species
     focal_group = species_to_group[focal_species]
+
+    # prints quick stats before the run begins
     print(f"Focal species: {focal_species} (Group: {focal_group})")
     print(f"Bait group names: {outgroups}")
     print(f"Collapse Threshold: {args.collapse_threshold}")
     print()
 
+    # returns a dictionary of the arguments and information for the run
     return {
         "tree_dir": tree_dir,
         "tree_suffix": tree_suffix,
