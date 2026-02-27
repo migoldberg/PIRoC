@@ -56,7 +56,9 @@ def clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, col
 
         # prints how many contaminants were removed and how many nodes were collapsed to the console
         if contaminants:
-            print(f"[{og_id}] Removed {len(contaminants)} contaminant(s) and collapsed {nodes_collapsed} low support nodes")
+            print(f"[{og_id}] Removed {len(contaminants)} contaminant(s) and collapsed {nodes_collapsed} low support nodes (support < {collapse_threshold})")
+        else:
+            print(f"[{og_id}] Collapsed {nodes_collapsed} low support nodes (support < {collapse_threshold})")
 
-        # returns the number of contaminants removed
-        return len(contaminants)
+    # returns the number of contaminants removed
+    return clean_tree_dir
