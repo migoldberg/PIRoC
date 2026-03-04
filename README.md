@@ -1,10 +1,11 @@
 # PIRoC: Phylogeny-Informed Removal of Contaminants
 By Mark I. Goldberg, Nickellaus G. Roberts, Kevin M. Kocot
 
-Kocot Lab
-Department of Biological Sciences 
-The University of Alabama
-Tuscaloosa, Alabama, USA
+Kocot Lab  
+Department of Biological Sciences  
+The University of Alabama  
+Tuscaloosa, Alabama, USA  
+
 ***
 ### Abstract
 Phylogenomics uses transcriptome-scale datasets to infer evolutionary relationships, particularly for non-model invertebrates. Despite recent advances, contamination remains a significant challenge for transcriptomes of small-bodied taxa, as whole organisms are often used for RNA extraction, allowing biological contaminants such as gut contents, symbionts, or epibionts to be co-extracted. Additional technical contamination may occur during library preparation or sequencing. If left unaddressed, such contamination can compromise the accuracy of downstream analyses and result in strongly supported but erroneous conclusions. To address this issue, we present PIRoC (​​Phylogeny-Informed Removal of Contaminants), a tool that uses phylogenomic trees to classify individual transcript-derived sequences as potential contaminants. PIRoC was evaluated using 42 transcriptomes, including 22 molluscs, 2 related invertebrates, and 18 phylogenomically diverse eukaryotic “lightning rod” taxa. A bivalve transcriptome was artificially spiked with 500 sequences from a diatom. Of these, 42 were missed by routine quality control measures. PIRoC correctly identified all 42 sequences as contaminants, while over 90% of bivalve sequences were retained.
