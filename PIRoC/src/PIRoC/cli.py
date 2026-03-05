@@ -66,6 +66,14 @@ def init_cli() -> None:
         help="TSV file with species_id and group columns"
     )
     parser.add_argument(
+        "--contaminants", type=str, default="Contaminant",
+        help="Comma-separated list of outgroup names (default: Outgroup)"
+    )
+    parser.add_argument(
+        "-rm", "--remove_contaminants", action="store_true",
+        help="Produce new tree files with contaminants removed"
+    )
+    parser.add_argument(
         "--min_support", type=float, default=70.0,
         help="Minimum bootstrap support for confident classification (default: 70)"
     )
@@ -80,14 +88,6 @@ def init_cli() -> None:
     parser.add_argument(
         "--collapse_threshold", type=float, default=50.0,
         help="Collapse nodes with bootstrap below this value (default: 50)"
-    )
-    parser.add_argument(
-        "--contaminants", type=str, default="Contaminant",
-        help="Comma-separated list of outgroup names (default: Outgroup)"
-    )
-    parser.add_argument(
-        "-rm", "--remove_contaminants", action="store_true",
-        help="Produce new tree files with contaminants removed"
     )
     parser.add_argument(
         "--debug", action="store_true",
