@@ -16,7 +16,7 @@ from ete3 import Tree
 
 from .cli import init_cli
 from .metadata import parse_species_name, get_group_from_species_name
-from .root import root_tree_at_outgroup
+from .root import root_tree_at_contaminant
 from .support import collapse_low_support_nodes
 from .branch_length import compute_branch_length_stats
 from .classifiy import classify_sequence
@@ -39,7 +39,7 @@ def main():
     min_target_purity = params["min_target_purity"]
     max_contaminant_purity = params["max_contaminant_purity"]
     collapse_threshold = params["collapse_threshold"]
-    outgroup_names = params["outgroups"]
+    contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
     debug = params["debug"]
 
@@ -73,16 +73,16 @@ def main():
             # loads tree using ete3
             t = Tree(tree_string, format=0)
            
-            # gets the outgroup leaves
-            outgroup_leaves = [
+            # gets the contaminant leaves
+            contaminants_leaves = [
                 l for l in t.get_leaves()
-                if get_group_from_species_name(l.name, species_to_group) in outgroup_names 
+                if get_group_from_species_name(l.name, species_to_group) in contaminant_names 
             ]
 
             # creates a dictionary to store tree metrics
             tree_metrics = {
                 'total_leaves': len(t.get_leaves()),
-                'total_outgroup_leaves': len(outgroup_leaves),
+                'total_contaminants_leaves': len(contaminants_leaves),
                 'rooted': False,
                 'nodes_collapsed': 0,
                 'branch_length_mean': None,
@@ -91,8 +91,8 @@ def main():
                 'focal_leaves': 0,
             }
 
-            # attempts to root the tree at a monophyletic outgroup clade and returns the rooted (or not) tree
-            t, rooted = root_tree_at_outgroup(t, outgroup_leaves)
+            # attempts to root the tree at a monophyletic contaminant clade and returns the rooted (or not) tree
+            t, rooted = root_tree_at_contaminant(t, contaminants_leaves)
             
             # collapses low support nodes across the entire tree
             t, nodes_collapsed = collapse_low_support_nodes(t, collapse_threshold)
@@ -133,7 +133,7 @@ def main():
                     min_support = min_support,
                     min_target_purity = min_target_purity,
                     max_contaminant_purity = max_contaminant_purity,
-                    outgroup_names = outgroup_names
+                    contaminant_names = contaminant_names
                 )
 
                 # stores the sequence name and id
@@ -173,7 +173,7 @@ def main():
 
     # writes the summary file
     summary_file = os.path.join(output_dir, "classification_summary.txt")
-    write_summary(summary_file, focal_species, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, outgroup_names, run_metrics, sequence_classifications)
+    write_summary(summary_file, focal_species, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, contaminant_names, run_metrics, sequence_classifications)
 
     sequence_classifications_file = os.path.join(output_dir, "sequence_classifications.tsv")
     write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics)

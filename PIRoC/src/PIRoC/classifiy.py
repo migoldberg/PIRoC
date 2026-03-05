@@ -45,15 +45,15 @@ def compute_clade_composition(node, species_to_group):
     # returns the species counts, group counts, and total leaves
     return species_counts, group_counts, total_leaves
 
-def analyze_sister_clades(focal_mrca, species_to_group, focal_group, outgroup_names):
+def analyze_sister_clades(focal_mrca, species_to_group, focal_group, contaminant_names):
     """
     Finds and analyzes the composition of the sister clade(s) of a focal clade.
     """
 
-    # if a custom outgroup names list is not provided, uses the default group name "Outgroup"
+    # if a custom contaminant names list is not provided, uses the default group name "Contaminant"
     # this is from the metadata file
-    if outgroup_names is None:
-        outgroup_names = {"Outgroup"}
+    if contaminant_names is None:
+        contaminant_names = {"Contaminant"}
 
     # gets the parent node of MRCA of the focal clade
     parent_node = focal_mrca.up
@@ -63,9 +63,9 @@ def analyze_sister_clades(focal_mrca, species_to_group, focal_group, outgroup_na
         return {
             "sister_groups": Counter(),
             "sister_species": Counter(),
-            "has_outgroup_sister": False,
+            "has_contaminant_sister": False,
             "has_same_group_sister": False,
-            "sister_is_pure_outgroup": False
+            "sister_is_pure_contaminant": False
         }
     
     # gets the sister clades of the focal clade
@@ -92,25 +92,25 @@ def analyze_sister_clades(focal_mrca, species_to_group, focal_group, outgroup_na
             sister_species[species] += 1
             sister_groups[group] += 1
 
-    #  checks if any of the sister clades contain outgroup sequences
-    has_outgroup = any(g in outgroup_names for g in sister_groups.keys())
+    #  checks if any of the sister clades contain contaminant sequences
+    has_contaminant = any(g in contaminant_names for g in sister_groups.keys())
 
     # checks if any of hte sister clades contain the focal group
     has_same_group = focal_group in sister_groups
 
-    # checks if the sister clade is purely composed of outgroup sequences
-    sister_is_pure_outgroup = (
+    # checks if the sister clade is purely composed of contaminant sequences
+    sister_is_pure_contaminant = (
         len(sister_groups) > 0 and
-        all(g in outgroup_names for g in sister_groups.keys())
+        all(g in contaminant_names for g in sister_groups.keys())
     )
 
     # returns the sister clade metrics
     return {
         "sister_groups": sister_groups,
         "sister_species": sister_species,
-        "has_outgroup_sister": has_outgroup,
+        "has_contaminant_sister": has_contaminant,
         "has_same_group_sister": has_same_group,
-        "sister_is_pure_outgroup": sister_is_pure_outgroup
+        "sister_is_pure_contaminant": sister_is_pure_contaminant
     }
 
 def calculate_clade_target_group_fraction(node, species_to_group, focal_group):
@@ -129,11 +129,11 @@ def calculate_clade_target_group_fraction(node, species_to_group, focal_group):
     else:
         return group_counts.get(focal_group, 0) / total_leaves
 
-def mrca_clade_contains_outgroup_intruders(group_counts, outgroup_names):
+def mrca_clade_contains_contaminant_intruders(group_counts, contaminant_names):
     """
-    Checks if the clade of the MRCA contains any outgroup intruders.
+    Checks if the clade of the MRCA contains any contaminant intruders.
     """
-    return any(g in outgroup_names for g in group_counts.keys())
+    return any(g in contaminant_names for g in group_counts.keys())
 
 def other_focal_group_leaves_in_clade(species_counts, species_to_group, focal_group, focal_species):
     """
@@ -159,16 +159,16 @@ def classify_sequence(
     min_support, 
     min_target_purity, 
     max_contaminant_purity, 
-    outgroup_names
+    contaminant_names
     ):
     """
     Main classification function for PIRoC.
     This function is called for each sequence in the tree individually. 
     """
 
-    # if a custom set of outgroup names is not provided in the metadata file as the "groups" column, uses the default group name "Outgroup"
-    if outgroup_names is None:
-        outgroup_names = {"Outgroup"}
+    # if a custom set of contaminant names is not provided in the metadata file as the "groups" column, uses the default group name "Contaminant"
+    if contaminant_names is None:
+        contaminant_names = {"Contaminant"}
 
     # gets the name of the sequence
     sequence_name = sequence.name
@@ -199,10 +199,10 @@ def classify_sequence(
     sequence_on_long_branch = is_on_long_branch(sequence, tree, branch_length_stats)
 
     # analyzes the sister clade(s) of the clade the sequence is in
-    sister_clade_metrics = analyze_sister_clades(parent_node, species_to_group, focal_group, outgroup_names)
+    sister_clade_metrics = analyze_sister_clades(parent_node, species_to_group, focal_group, contaminant_names)
 
-    # checks if the clade containing the sequence has any outgroup intruders
-    has_outgroup_in_clade = mrca_clade_contains_outgroup_intruders(group_counts, outgroup_names)
+    # checks if the clade containing the sequence has any contaminant intruders
+    has_contaminant_in_clade = mrca_clade_contains_contaminant_intruders(group_counts, contaminant_names)
 
     # checks if the clade containing the sequence has any other focal group sequences other than the one being classified
     has_other_focal_group_leaves_in_clade = other_focal_group_leaves_in_clade(species_counts, species_to_group, focal_group, focal_species)
@@ -221,21 +221,21 @@ def classify_sequence(
     high_support = bootstrap is not None and bootstrap >= min_support
 
 
-    if sister_clade_metrics["sister_is_pure_outgroup"] and high_support:
-        # if the sister clade(s) are purely outgroups AND the node is highly supported = CONTAMINANT
+    if sister_clade_metrics["sister_is_pure_contaminant"] and high_support:
+        # if the sister clade(s) are purely contaminants AND the node is highly supported = CONTAMINANT
         classification = "CONTAMINANT"
-        classification_notes.append("sister_clade_pure_outgroup")
-    elif sequence_on_long_branch and has_outgroup_in_clade:
-        # if the sequence is on a long branch AND the clade contains outgroup intruders = CONTAMINANT
+        classification_notes.append("sister_clade_pure_contaminant")
+    elif sequence_on_long_branch and has_contaminant_in_clade:
+        # if the sequence is on a long branch AND the clade contains contaminant intruders = CONTAMINANT
         classification = "CONTAMINANT"
-        classification_notes.append("long_branch_with_outgroup_in_clade")
+        classification_notes.append("long_branch_with_contaminant_in_clade")
     elif high_support and clade_target_group_fraction <= max_contaminant_purity:
         # if the node is highly supported AND the clade target group fraction is less than the maximum contaminant purity argument = CONTAMINANT
         classification = "CONTAMINANT"
         classification_notes.append("low_ctgf_high_support")
 
     elif high_support and clade_target_group_fraction >= min_target_purity:
-        if not sequence_on_long_branch and not has_outgroup_in_clade:
+        if not sequence_on_long_branch and not has_contaminant_in_clade:
             # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument = TARGET
             classification = "TARGET"
             classification_notes.append("high_ctgf_high_support")
@@ -250,11 +250,11 @@ def classify_sequence(
             # AND the sequence is on a long branch = FLAG
             classification = "FLAG"
             classification_notes.append("high_ctgf_but_long_branch")
-        elif has_outgroup_in_clade:
+        elif has_contaminant_in_clade:
             # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument 
-            # AND the clade contains outgroup intruders = FLAG
+            # AND the clade contains contaminant intruders = FLAG
             classification = "FLAG"
-            classification_notes.append("high_ctgf_but_outgroup_in_clade")
+            classification_notes.append("high_ctgf_but_contaminant_in_clade")
     
     else:
         if bootstrap is None or bootstrap < min_support:
@@ -278,7 +278,7 @@ def classify_sequence(
         "focal_species_in_clade": species_counts.get(focal_species, 0),
         "has_other_focal_group_leaves_in_clade": has_other_focal_group_leaves_in_clade,
         "has_other_focal_species_leaves_in_clade": has_other_focal_species_leaves_in_clade,
-        "has_outgroup_in_clade": has_outgroup_in_clade,
+        "has_contaminant_in_clade": has_contaminant_in_clade,
         "is_on_long_branch": sequence_on_long_branch,
         "classification_notes": classification_notes
     }

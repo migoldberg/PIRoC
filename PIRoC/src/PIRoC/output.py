@@ -8,7 +8,7 @@ import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict
 
-def write_summary(summary_file, focal_species, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, outgroup_names, run_metrics, sequence_classifications):
+def write_summary(summary_file, focal_species, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, contaminant_names, run_metrics, sequence_classifications):
     with open(summary_file, 'w') as f:
         f.write("PIRoC Classification Summary\n")
         f.write("=" * 60 + "\n\n")
@@ -19,7 +19,7 @@ def write_summary(summary_file, focal_species, focal_group, min_support, min_tar
         f.write(f"  Min target purity:   {min_target_purity}\n")
         f.write(f"  Max contam purity:   {max_contaminant_purity}\n")
         f.write(f"  Collapse threshold:  {collapse_threshold}\n")
-        f.write(f"  Outgroups:           {', '.join(outgroup_names)}\n\n")
+        f.write(f"  Contaminants:        {', '.join(contaminant_names)}\n\n")
         
         f.write("Processing Stats:\n")
         f.write(f"  Total trees:             {run_metrics['total_trees']}\n")
@@ -45,8 +45,8 @@ def write_sequence_classifications(sequence_classifications_file, sequence_class
         header = [
             "OG_ID", "Gene_Name", "Classification", "Bootstrap", "Clade_Target_Group_Fraction", 
             "Total_Leaves", "Focal_Group", "Focal_Group_Leaves",
-            "Same_Species_In_Clade", "Has_Other_Focal_Group_In_Clade",
-            "Has_Other_Focal_Species_In_Clade", "Has_Outgroup_In_Clade",
+            "Same_Species_In_Clade",             "Has_Other_Focal_Group_In_Clade",
+            "Has_Other_Focal_Species_In_Clade", "Has_Contaminant_In_Clade",
             "Is_Long_Branch", "Confidence_Notes"
         ]
         f.write("\t".join(header) + "\n")
@@ -66,7 +66,7 @@ def write_sequence_classifications(sequence_classifications_file, sequence_class
                 str(m["focal_species_in_clade"]),
                 str(m["has_other_focal_group_leaves_in_clade"]),
                 str(m["has_other_focal_species_leaves_in_clade"]),
-                str(m["has_outgroup_in_clade"]),
+                str(m["has_contaminant_in_clade"]),
                 str(m["is_on_long_branch"]),
                 ";".join(m["classification_notes"])
             ]

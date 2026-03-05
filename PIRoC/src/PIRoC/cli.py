@@ -82,7 +82,7 @@ def init_cli() -> None:
         help="Collapse nodes with bootstrap below this value (default: 50)"
     )
     parser.add_argument(
-        "--outgroups", type=str, default="Outgroup",
+        "--contaminants", type=str, default="Contaminant",
         help="Comma-separated list of outgroup names (default: Outgroup)"
     )
     parser.add_argument(
@@ -102,7 +102,7 @@ def init_cli() -> None:
     output_dir = args.output_dir
     focal_species = args.focal_species
     metadata_path = args.metadata
-    outgroups = set(args.outgroups.split(","))
+    contaminants = set(args.contaminants.split(","))
     remove_contaminants = args.remove_contaminants
     debug = args.debug
 
@@ -134,7 +134,7 @@ def init_cli() -> None:
 
     # prints quick stats before the run begins
     print(f"Focal species: {focal_species} (Group: {focal_group})")
-    print(f"Bait group names: {outgroups}")
+    print(f"Contaminant group(s) names: {contaminants}")
     print(f"Collapse Threshold: {args.collapse_threshold}")
     print()
 
@@ -151,7 +151,7 @@ def init_cli() -> None:
         "min_target_purity": args.min_target_purity,
         "max_contaminant_purity": args.max_contaminant_purity,
         "collapse_threshold": args.collapse_threshold,
-        "outgroups": outgroups,
+        "contaminants": contaminants,
         "logger": logger,
         "remove_contaminants": remove_contaminants,
         "debug": debug,
