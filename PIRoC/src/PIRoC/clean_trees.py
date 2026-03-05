@@ -4,12 +4,35 @@ Writes clean trees by removing contaminants and collapsing low support nodes.
 """
 
 import os
+import sys
 import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict
 from ete3 import Tree
+from Bio import SeqIO
 
 from .support import collapse_low_support_nodes
+
+def fasta_in_tree_dir(tree_dir, og_id):
+    """
+    Helper function to check if the tree directory has the fasta file corresponding to the tree.
+    """
+    common_fasta_suffixes = [".fa", ".fasta", ".fna", ".faa"]
+    for suffix in common_fasta_suffixes:
+        fasta_path = os.path.join(tree_dir, f"{og_id}{suffix}")
+        if os.path.exists(fasta_path):
+            return fasta_path
+    return False
+
+def clean_fasta(og_id, contaminants, fasta_path, clean_dir):
+    """
+    Cleans the fasta by removing contaminants.
+    """
+    clean_fasta = (sequence for sequence in SeqIO.parse(fasta_path, "fasta") if sequence.id not in contaminants)
+    SeqIO.write(clean_fasta, os.path.join(clean_dir, f"{og_id}.fa"), "fasta")
+
+    return clean_fasta
+
 
 def clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold):
     """
@@ -24,9 +47,9 @@ def clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, col
         og_id, sequence_name = sequence_id.split("::")
         trees[og_id][sequence_name] = classification
 
-    # creates a directory for the clean trees
-    clean_tree_dir = os.path.join(output_dir, "clean_trees")
-    os.makedirs(clean_tree_dir, exist_ok=True)
+    # creates a directory for the clean orthogroups
+    clean_dir = os.path.join(output_dir, "clean_orthogroups")
+    os.makedirs(clean_dir, exist_ok=True)
 
     # loops throug heach tree in the trees dictionary
     for og_id, sequences in trees.items():
@@ -52,13 +75,20 @@ def clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, col
         t, nodes_collapsed = collapse_low_support_nodes(t, collapse_threshold)
 
         # writes the clean tree to a new file
-        t.write(format=1, outfile=os.path.join(clean_tree_dir, f"{og_id}{tree_suffix}"))
+        t.write(format=1, outfile=os.path.join(clean_dir, f"{og_id}{tree_suffix}"))
 
         # prints how many contaminants were removed and how many nodes were collapsed to the console
         if contaminants:
             print(f"[{og_id}] Removed {len(contaminants)} contaminant(s) and collapsed {nodes_collapsed} low support nodes (support < {collapse_threshold})")
-        else:
+        elif nodes_collapsed > 0:
             print(f"[{og_id}] Collapsed {nodes_collapsed} low support nodes (support < {collapse_threshold})")
 
+        fasta_path = fasta_in_tree_dir(tree_dir, og_id)
+        if fasta_path:
+            clean_fasta(og_id, contaminants, fasta_path, clean_dir)
+            print(f"[{og_id}] FASTA file cleaned")
+        else:
+            print(f'[{og_id}] No fasta file found in tree directory')
+
     # returns the number of contaminants removed
-    return clean_tree_dir
+    return clean_dir
