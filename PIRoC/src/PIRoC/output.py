@@ -43,8 +43,8 @@ def write_summary(summary_file, focal_species, focal_group, min_support, min_tar
 def write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics):
     with open(sequence_classifications_file, 'w') as f:
         header = [
-            "OG_ID", "Gene_Name", "Classification", "Bootstrap", "Clade_Target_Group_Fraction", 
-            "Total_Leaves", "Focal_Group", "Focal_Group_Leaves",
+            "OG_ID", "Sequence_Name", "Classification", "Bootstrap", "Clade_Target_Group_Fraction", 
+            "Total_Leaves", "Focal_Group", "n_Focal_Group_Leaves_In_Clade",
             "Same_Species_In_Clade",             "Has_Other_Focal_Group_In_Clade",
             "Has_Other_Focal_Species_In_Clade", "Has_Contaminant_In_Clade",
             "Is_Long_Branch", "Confidence_Notes"
