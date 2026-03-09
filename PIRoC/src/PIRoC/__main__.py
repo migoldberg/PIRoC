@@ -41,7 +41,7 @@ def main():
     collapse_threshold = params["collapse_threshold"]
     contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
-    debug = params["debug"]
+    quiet = params["quiet"]
 
     # create empty dictionaries to store sequence classifications and metrics
     sequence_classifications = {} # og_id::sequence_name -> classification
@@ -56,11 +56,12 @@ def main():
         'total_nodes_collapsed': 0,
     }
 
+    # count total tree files before processing
+    tree_files = [f for f in os.listdir(tree_dir) if f.endswith(tree_suffix)]
+    total_tree_files = len(tree_files)
+
     # loop through each tree in the tree directory
-    for filename in os.listdir(tree_dir):
-        if not filename.endswith(tree_suffix):
-            continue
-        
+    for filename in tree_files:
         run_metrics['total_trees'] += 1
         tree_path = os.path.join(tree_dir, filename)
         og_id = filename.replace(tree_suffix, "")
@@ -150,26 +151,31 @@ def main():
                 # joins the classification notes with a comma so they can be printed together later
                 notes = ",".join(metrics["classification_notes"]) if metrics["classification_notes"] else "-"
 
-                # prints quick classification information for the sequence to the console during the run
-                print(
-                    f"[{og_id}] {sequence_name:40s} | {classification:12s} | "
-                    f"bs={metrics['bootstrap']:>5} | "
-                    f"ctgf={metrics['clade_target_group_fraction']:.2f} | "
-                    f"longbr={metrics['is_on_long_branch']} | "
-                    f"notes={notes}"
-                )
-
-                # if debug is enabled, prints the tree metrics to the console
-                if debug:
-                    print(tree_metrics)
-
+                # prints quick classification information for the sequence to the console during the run               
+                if not quiet:
+                    print(
+                        f"[{og_id}] {sequence_name:40s} | {classification:12s} | "
+                        f"bs={metrics['bootstrap']:>5} | "
+                        f"ctgf={metrics['clade_target_group_fraction']:.2f} | "
+                        f"longbr={metrics['is_on_long_branch']} | "
+                        f"notes={notes}"
+                    )
+                else:
+                    print(f"\r Classifying Sequences: [{run_metrics['total_trees']}/{total_tree_files}]", end="", flush=True)
+                
         except Exception as e:
             print(f"error: {e}")
             run_metrics['total_errors'] += 1
 
+    if quiet:
+        print()
+
     # if the remove-contaminants flag is enabled, the function to produce clean trees is called
     if remove_contaminants:
-        clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold)
+        clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold, quiet)
+
+    print()
+    print("\033[4mWriting Output\033[0m")
 
     # writes the summary file
     summary_file = os.path.join(output_dir, "classification_summary.txt")
@@ -180,6 +186,10 @@ def main():
 
     sequence_lists_dir = os.path.join(output_dir, "sequence_classifications")
     write_sequence_lists(sequence_lists_dir, sequence_classifications)  
+
+    print("\033[4mRun Complete\033[0m")
+    print(f"Finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"https://github.com/migoldberg/PIRoC\n\n")
 
     sys.stdout = logger.terminal
     logger.close()

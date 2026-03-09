@@ -21,9 +21,6 @@ class Logger:
     def __init__(self, log_path):
         self.terminal = sys.stdout
         self.log_file = open(log_path, 'w')
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.log_file.write(f"PIRoC Log - {timestamp}\n")
-        self.log_file.write("=" * 50 + "\n\n")
         self.log_file.flush()
 
     def write(self, message):
@@ -90,8 +87,8 @@ def init_cli() -> None:
         help="Collapse nodes with bootstrap below this value (default: 50)"
     )
     parser.add_argument(
-        "--debug", action="store_true",
-        help="Enable debug mode"
+        "--quiet", action="store_true",
+        help="Enable quiet mode"
     )
 
     # parses the arguments
@@ -104,7 +101,7 @@ def init_cli() -> None:
     metadata_path = args.metadata
     contaminants = set(args.contaminants.split(","))
     remove_contaminants = args.remove_contaminants
-    debug = args.debug
+    quiet = args.quiet
 
     # creates the output directory
     os.makedirs(output_dir, exist_ok=True)
@@ -133,10 +130,43 @@ def init_cli() -> None:
     focal_group = species_to_group[focal_species]
 
     # prints quick stats before the run begins
-    print(f"Focal species: {focal_species} (Group: {focal_group})")
-    print(f"Contaminant group(s) names: {contaminants}")
-    print(f"Collapse Threshold: {args.collapse_threshold}")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     print()
+    print("\033[4mPIRoC - Phylogeny-Informed Removal of Contaminants\033[0m")
+    print(f"Version 1.0.0")
+    print(f"Run Date: {timestamp}\n")
+
+    print("\033[4mRun Parameters\033[0m")
+    print("  [~] required   [\u00b7] default   [X] user set\n")
+    params_display = [
+        ("tree_dir",             tree_dir,                    True,  None),
+        ("suffix",               tree_suffix,                 False, ".tre"),
+        ("output_dir",           output_dir,                  False, "PIRoC_output"),
+        ("focal_species",        focal_species,               True,  None),
+        ("focal_group",          focal_group,                 True,  None),
+        ("metadata",             metadata_path,               True,  None),
+        ("contaminants",         args.contaminants,           False, "Contaminant"),
+        ("remove_contaminants",  remove_contaminants,         False, False),
+        ("min_support",          args.min_support,            False, 70.0),
+        ("min_target_purity",    args.min_target_purity,      False, 0.8),
+        ("max_contaminant_purity", args.max_contaminant_purity, False, 0.5),
+        ("collapse_threshold",   args.collapse_threshold,     False, 50.0),
+        ("quiet",                quiet,                       False, False),
+    ]
+    max_name_len = max(len(name) for name, *_ in params_display)
+    for name, value, required, default in params_display:
+        if required:
+            marker = "~"
+        elif value == default:
+            marker = "\u00b7"
+        else:
+            marker = "X"
+        print(f"  [{marker}] {name:<{max_name_len}}  {value}")
+    print()
+
+    print("\033[4mRun Progress\033[0m")
+
 
     # returns a dictionary of the arguments and information for the run
     return {
@@ -154,5 +184,5 @@ def init_cli() -> None:
         "contaminants": contaminants,
         "logger": logger,
         "remove_contaminants": remove_contaminants,
-        "debug": debug,
+        "quiet": quiet,
     }

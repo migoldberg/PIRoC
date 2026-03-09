@@ -38,7 +38,7 @@ def write_summary(summary_file, focal_species, focal_group, min_support, min_tar
                 f.write(f"  {label:12s}: {count:5d} ({pct:5.1f}%)\n")
             f.write("\n")
 
-    print(f"\nSummary written to {summary_file}")
+    print(f"Summary written to: {summary_file}")
 
 def write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics):
     with open(sequence_classifications_file, 'w') as f:
@@ -72,7 +72,7 @@ def write_sequence_classifications(sequence_classifications_file, sequence_class
             ]
             f.write("\t".join(row) + "\n")
 
-    print(f"Classification results written to {sequence_classifications_file}")
+    print(f"Classification results written to: {sequence_classifications_file}\n")
 
 def write_sequence_lists(sequence_lists_dir, sequence_classifications):
     os.makedirs(sequence_lists_dir, exist_ok=True)
@@ -84,4 +84,3 @@ def write_sequence_lists(sequence_lists_dir, sequence_classifications):
                 if sequence_classifications[sequence_key] == label:
                     og_id, sequence_name = sequence_key.split("::", 1)
                     f.write(f"{og_id}\t{sequence_name}\n")
-        print(f"{label} classification list written to {list_file}")

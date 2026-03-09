@@ -34,7 +34,7 @@ def clean_fasta(og_id, contaminants, fasta_path, clean_dir):
     return clean_fasta
 
 
-def clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold):
+def clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold, quiet):
     """
     Cleans trees by removing contaminants and collapsing low support nodes.
     """
@@ -51,8 +51,10 @@ def clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, col
     clean_dir = os.path.join(output_dir, "clean_orthogroups")
     os.makedirs(clean_dir, exist_ok=True)
 
-    # loops throug heach tree in the trees dictionary
-    for og_id, sequences in trees.items():
+    total_trees = len(trees)
+
+    # loops through each tree in the trees dictionary
+    for i, (og_id, sequences) in enumerate(trees.items(), 1):
         # creates a list of contaminants for the tree
         contaminants = [name for name, cls in sequences.items() if cls == "CONTAMINANT"]
 
@@ -77,18 +79,25 @@ def clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, col
         # writes the clean tree to a new file
         t.write(format=1, outfile=os.path.join(clean_dir, f"{og_id}{tree_suffix}"))
 
-        # prints how many contaminants were removed and how many nodes were collapsed to the console
-        if contaminants:
-            print(f"[{og_id}] Removed {len(contaminants)} contaminant(s) and collapsed {nodes_collapsed} low support nodes (support < {collapse_threshold})")
-        elif nodes_collapsed > 0:
-            print(f"[{og_id}] Collapsed {nodes_collapsed} low support nodes (support < {collapse_threshold})")
+        if not quiet:
+            if contaminants:
+                print(f"[{og_id}] Removed {len(contaminants)} contaminant(s) and collapsed {nodes_collapsed} low support nodes (support < {collapse_threshold})")
+            elif nodes_collapsed > 0:
+                print(f"[{og_id}] Collapsed {nodes_collapsed} low support nodes (support < {collapse_threshold})")
 
-        fasta_path = fasta_in_tree_dir(tree_dir, og_id)
-        if fasta_path:
-            clean_fasta(og_id, contaminants, fasta_path, clean_dir)
-            print(f"[{og_id}] FASTA file cleaned")
+            fasta_path = fasta_in_tree_dir(tree_dir, og_id)
+            if fasta_path:
+                clean_fasta(og_id, contaminants, fasta_path, clean_dir)
+                print(f"[{og_id}] FASTA file cleaned")
+            else:
+                print(f'[{og_id}] No fasta file found in tree directory')
         else:
-            print(f'[{og_id}] No fasta file found in tree directory')
+            fasta_path = fasta_in_tree_dir(tree_dir, og_id)
+            if fasta_path:
+                clean_fasta(og_id, contaminants, fasta_path, clean_dir)
+            print(f"\r Cleaning Trees: [{i}/{total_trees}]", end="", flush=True)
 
-    # returns the number of contaminants removed
+    if quiet:
+        print()
+
     return clean_dir
