@@ -64,11 +64,11 @@ def init_cli() -> None:
     )
     parser.add_argument(
         "--contaminants", type=str, default="Contaminant",
-        help="Comma-separated list of outgroup names (default: Outgroup)"
+        help="Comma-separated list of known contaminant group names (default: Contaminant)"
     )
     parser.add_argument(
         "-rm", "--remove_contaminants", action="store_true",
-        help="Produce new tree files with contaminants removed"
+        help="After classification remove contaminant sequences from the orthogroups."
     )
     parser.add_argument(
         "--min_support", type=float, default=70.0,
@@ -76,19 +76,19 @@ def init_cli() -> None:
     )
     parser.add_argument(
         "--min_target_purity", type=float, default=0.8,
-        help="Minimum focal-group purity for TARGET (default: 0.8)"
+        help="Minimum clade target group fraction for TARGET classification (default: 0.8)"
     )
     parser.add_argument(
         "--max_contaminant_purity", type=float, default=0.5,
-        help="Maximum focal-group purity for CONTAMINANT (default: 0.5)"
+        help="Maximum clade target group fraction for CONTAMINANT classification (default: 0.5)"
     )
     parser.add_argument(
         "--collapse_threshold", type=float, default=50.0,
-        help="Collapse nodes with bootstrap below this value (default: 50)"
+        help="Collapse nodes with bootstrap support below this value (default: 50)"
     )
     parser.add_argument(
         "--quiet", action="store_true",
-        help="Enable quiet mode"
+        help="Enable quiet mode (minimul output to the console)"
     )
 
     # parses the arguments
