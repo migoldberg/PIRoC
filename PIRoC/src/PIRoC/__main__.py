@@ -21,7 +21,8 @@ from .support import collapse_low_support_nodes
 from .branch_length import compute_branch_length_stats
 from .classifiy import classify_sequence
 from .output import write_summary, write_sequence_classifications, write_sequence_lists
-from .clean_trees import clean_trees
+from .clean_orthogroups import clean_orthogroups
+from .review_flags import start_review_flags
 
 def main():
     params = init_cli()
@@ -42,7 +43,8 @@ def main():
     contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
     quiet = params["quiet"]
-
+    review_flags = params["review_flags"]
+    
     # create empty dictionaries to store sequence classifications and metrics
     sequence_classifications = {} # og_id::sequence_name -> classification
     sequence_metrics = {} # og_id::sequence_name -> metrics
@@ -170,9 +172,14 @@ def main():
     if quiet:
         print()
 
+    if review_flags:
+        start_review_flags(tree_dir, tree_suffix, sequence_classifications, sequence_metrics)
+
     # if the remove-contaminants flag is enabled, the function to produce clean trees is called
     if remove_contaminants:
-        clean_trees(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold, quiet)
+        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold, quiet)
+        print()
+        
 
     print()
     print("\033[4mWriting Output\033[0m")

@@ -87,6 +87,10 @@ def init_cli() -> None:
         help="Collapse nodes with bootstrap support below this value (default: 50)"
     )
     parser.add_argument(
+        "--review-flags", action="store_true",
+        help="At the end of the run, review the flagged sequences via CLI and make final decisions"
+    )
+    parser.add_argument(
         "--quiet", action="store_true",
         help="Enable quiet mode (minimul output to the console)"
     )
@@ -102,6 +106,7 @@ def init_cli() -> None:
     contaminants = set(args.contaminants.split(","))
     remove_contaminants = args.remove_contaminants
     quiet = args.quiet
+    review_flags = args.review_flags
 
     # creates the output directory
     os.makedirs(output_dir, exist_ok=True)
@@ -138,7 +143,7 @@ def init_cli() -> None:
     print(f"Run Date: {timestamp}\n")
 
     print("\033[4mRun Parameters\033[0m")
-    print("  [~] required   [\u00b7] default   [X] user set\n")
+    print("  [~] required   [ ] default   [X] user set\n")
     params_display = [
         ("tree_dir",             tree_dir,                    True,  None),
         ("suffix",               tree_suffix,                 False, ".tre"),
@@ -153,20 +158,20 @@ def init_cli() -> None:
         ("max_contaminant_purity", args.max_contaminant_purity, False, 0.5),
         ("collapse_threshold",   args.collapse_threshold,     False, 50.0),
         ("quiet",                quiet,                       False, False),
+        ("review_flags",         review_flags,                False, False),
     ]
     max_name_len = max(len(name) for name, *_ in params_display)
     for name, value, required, default in params_display:
         if required:
             marker = "~"
         elif value == default:
-            marker = "\u00b7"
+            marker = " "
         else:
             marker = "X"
         print(f"  [{marker}] {name:<{max_name_len}}  {value}")
+        
     print()
-
     print("\033[4mRun Progress\033[0m")
-
 
     # returns a dictionary of the arguments and information for the run
     return {
@@ -185,4 +190,5 @@ def init_cli() -> None:
         "logger": logger,
         "remove_contaminants": remove_contaminants,
         "quiet": quiet,
+        "review_flags": review_flags,
     }
