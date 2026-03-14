@@ -17,7 +17,6 @@ from ete3 import Tree
 from .cli import init_cli
 from .metadata import parse_species_name, get_group_from_species_name
 from .root import root_tree_at_contaminant
-from .support import collapse_low_support_nodes
 from .branch_length import compute_branch_length_stats
 from .classifiy import classify_sequence
 from .output import write_summary, write_sequence_classifications, write_sequence_lists
@@ -38,7 +37,6 @@ def main():
     min_support = params["min_support"]
     min_target_purity = params["min_target_purity"]
     max_contaminant_purity = params["max_contaminant_purity"]
-    collapse_threshold = params["collapse_threshold"]
     contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
     quiet = params["quiet"]
@@ -54,7 +52,6 @@ def main():
         'total_trees': 0,
         'total_errors': 0,
         'total_sequences_classified': 0,
-        'total_nodes_collapsed': 0,
     }
 
     # count total tree files before processing
@@ -86,7 +83,6 @@ def main():
                 'total_leaves': len(t.get_leaves()),
                 'total_contaminants_leaves': len(contaminants_leaves),
                 'rooted': False,
-                'nodes_collapsed': 0,
                 'branch_length_mean': None,
                 'branch_length_std': None,
                 'branch_length_long_branch_threshold': None,
@@ -96,9 +92,6 @@ def main():
             # attempts to root the tree at a monophyletic contaminant clade and returns the rooted (or not) tree
             t, rooted = root_tree_at_contaminant(t, contaminants_leaves)
             
-            # collapses low support nodes across the entire tree
-            t, nodes_collapsed = collapse_low_support_nodes(t, collapse_threshold)
-
             # computes branch length information for later classification of sequences on long branches
             branch_length_stats = compute_branch_length_stats(t)
 
@@ -115,12 +108,10 @@ def main():
 
             # update tree metrics
             tree_metrics['rooted'] = rooted
-            tree_metrics['nodes_collapsed'] = nodes_collapsed
             tree_metrics['branch_length_mean'] = branch_length_stats['mean']
             tree_metrics['branch_length_std'] = branch_length_stats['std']
             tree_metrics['branch_length_long_branch_threshold'] = branch_length_stats['long_branch_threshold']
             tree_metrics['focal_leaves'] = len(focal_leaves)
-            run_metrics['total_nodes_collapsed'] += nodes_collapsed
 
             # loops through each focal leaf in the tree
             for sequence in focal_leaves:
@@ -175,7 +166,7 @@ def main():
 
     # if the remove-contaminants flag is enabled, the function to produce clean trees is called
     if remove_contaminants:
-        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold, quiet)
+        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, output_dir, quiet)
         print()
         
 
@@ -184,7 +175,7 @@ def main():
 
     # writes the summary file
     summary_file = os.path.join(output_dir, "classification_summary.txt")
-    write_summary(summary_file, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, contaminant_names, run_metrics, sequence_classifications)
+    write_summary(summary_file, focal_group, min_support, min_target_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications)
 
     sequence_classifications_file = os.path.join(output_dir, "sequence_classifications.tsv")
     write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics)

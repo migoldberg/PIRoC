@@ -33,7 +33,7 @@ def clean_fasta(og_id, contaminants, fasta_path, clean_dir):
 
     return clean_fasta
 
-def clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, output_dir, collapse_threshold, quiet):
+def clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, output_dir, quiet):
     trees = defaultdict(dict)
 
     for sequence_id, classification in sequence_classifications.items():

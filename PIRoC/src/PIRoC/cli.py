@@ -83,10 +83,6 @@ def init_cli() -> None:
         help="Maximum clade target group fraction for CONTAMINANT classification (default: 0.5)"
     )
     parser.add_argument(
-        "--collapse_threshold", type=float, default=50.0,
-        help="Collapse nodes with bootstrap support below this value (default: 50)"
-    )
-    parser.add_argument(
         "--review-flags", action="store_true",
         help="At the end of the run, review the flagged sequences via CLI and make final decisions"
     )
@@ -152,7 +148,6 @@ def init_cli() -> None:
         ("min_support",          args.min_support,            False, 70.0),
         ("min_target_purity",    args.min_target_purity,      False, 0.8),
         ("max_contaminant_purity", args.max_contaminant_purity, False, 0.5),
-        ("collapse_threshold",   args.collapse_threshold,     False, 50.0),
         ("quiet",                quiet,                       False, False),
         ("review_flags",         review_flags,                False, False),
     ]
@@ -180,7 +175,6 @@ def init_cli() -> None:
         "min_support": args.min_support,
         "min_target_purity": args.min_target_purity,
         "max_contaminant_purity": args.max_contaminant_purity,
-        "collapse_threshold": args.collapse_threshold,
         "contaminants": contaminants,
         "logger": logger,
         "remove_contaminants": remove_contaminants,

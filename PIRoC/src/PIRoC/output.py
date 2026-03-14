@@ -8,7 +8,7 @@ import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict
 
-def write_summary(summary_file, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, contaminant_names, run_metrics, sequence_classifications):
+def write_summary(summary_file, focal_group, min_support, min_target_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications):
     with open(summary_file, 'w') as f:
         f.write("PIRoC Classification Summary\n")
         f.write("=" * 60 + "\n\n")
@@ -18,14 +18,12 @@ def write_summary(summary_file, focal_group, min_support, min_target_purity, max
         f.write(f"  Min support:         {min_support}\n")
         f.write(f"  Min target purity:   {min_target_purity}\n")
         f.write(f"  Max contam purity:   {max_contaminant_purity}\n")
-        f.write(f"  Collapse threshold:  {collapse_threshold}\n")
         f.write(f"  Contaminants:        {', '.join(contaminant_names)}\n\n")
         
         f.write("Processing Stats:\n")
         f.write(f"  Total trees:             {run_metrics['total_trees']}\n")
         f.write(f"  Trees with no focal group:        {run_metrics['no_focal_group_in_tree']}\n")
         f.write(f"  Errors:                  {run_metrics['total_errors']}\n")
-        f.write(f"  Total nodes collapsed:   {run_metrics['total_nodes_collapsed']}\n")
         f.write(f"  Total sequences classified:  {run_metrics['total_sequences_classified']}\n\n")
 
         if sequence_classifications:

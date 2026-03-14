@@ -10,6 +10,8 @@ from ete3 import Tree
 
 def collapse_low_support_nodes(tree, threshold):
     """
+    ** No longer used because trees are not outputted anymore so collapsing would not be helpful.
+
     Collapses low support nodes in the tree.
     """
 
