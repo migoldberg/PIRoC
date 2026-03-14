@@ -166,7 +166,7 @@ def main():
 
     # if the remove-contaminants flag is enabled, the function to produce clean trees is called
     if remove_contaminants:
-        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, output_dir, quiet)
+        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, quiet)
         print()
         
 
