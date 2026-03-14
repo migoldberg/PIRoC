@@ -8,13 +8,13 @@ import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict
 
-def write_summary(summary_file, focal_species, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, contaminant_names, run_metrics, sequence_classifications):
+def write_summary(summary_file, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, contaminant_names, run_metrics, sequence_classifications):
     with open(summary_file, 'w') as f:
         f.write("PIRoC Classification Summary\n")
         f.write("=" * 60 + "\n\n")
         
         f.write("Parameters:\n")
-        f.write(f"  Focal species:       {focal_species} ({focal_group})\n")
+        f.write(f"  Focal group:       {focal_group}\n")
         f.write(f"  Min support:         {min_support}\n")
         f.write(f"  Min target purity:   {min_target_purity}\n")
         f.write(f"  Max contam purity:   {max_contaminant_purity}\n")
@@ -23,7 +23,7 @@ def write_summary(summary_file, focal_species, focal_group, min_support, min_tar
         
         f.write("Processing Stats:\n")
         f.write(f"  Total trees:             {run_metrics['total_trees']}\n")
-        f.write(f"  Trees with no focal species:        {run_metrics['no_focal_species_in_tree']}\n")
+        f.write(f"  Trees with no focal group:        {run_metrics['no_focal_group_in_tree']}\n")
         f.write(f"  Errors:                  {run_metrics['total_errors']}\n")
         f.write(f"  Total nodes collapsed:   {run_metrics['total_nodes_collapsed']}\n")
         f.write(f"  Total sequences classified:  {run_metrics['total_sequences_classified']}\n\n")
@@ -43,10 +43,9 @@ def write_summary(summary_file, focal_species, focal_group, min_support, min_tar
 def write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics):
     with open(sequence_classifications_file, 'w') as f:
         header = [
-            "OG_ID", "Sequence_Name", "Classification", "Bootstrap", "Clade_Target_Group_Fraction", 
+            "OG_ID", "Sequence_Name", "Classification", "Bootstrap", "Clade_Target_Group_Fraction",
             "Total_Leaves", "Focal_Group", "n_Focal_Group_Leaves_In_Clade",
-            "Same_Species_In_Clade",             "Has_Other_Focal_Group_In_Clade",
-            "Has_Other_Focal_Species_In_Clade", "Has_Contaminant_In_Clade",
+            "Has_Other_Focal_Group_In_Clade", "Has_Contaminant_In_Clade",
             "Is_Long_Branch", "Confidence_Notes"
         ]
         f.write("\t".join(header) + "\n")
@@ -63,9 +62,7 @@ def write_sequence_classifications(sequence_classifications_file, sequence_class
                 str(m["total_leaves"]),
                 str(m["focal_group"]),
                 str(m["focal_group_leaves"]),
-                str(m["focal_species_in_clade"]),
                 str(m["has_other_focal_group_leaves_in_clade"]),
-                str(m["has_other_focal_species_leaves_in_clade"]),
                 str(m["has_contaminant_in_clade"]),
                 str(m["is_on_long_branch"]),
                 ";".join(m["classification_notes"])

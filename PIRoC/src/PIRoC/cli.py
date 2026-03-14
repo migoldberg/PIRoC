@@ -55,8 +55,8 @@ def init_cli() -> None:
         help="Output directory (default: PIRoC_output)"
     )
     parser.add_argument(
-        "-f", "--focal_species", required=True,
-        help="Species ID of the focal species (e.g., obim)"
+        "-f", "--focal_group", required=True,
+        help="Group name of the focal group (e.g., Mollusc)"
     )
     parser.add_argument(
         "-m", "--metadata", required=True,
@@ -101,7 +101,7 @@ def init_cli() -> None:
     tree_dir = args.tree_dir
     tree_suffix = args.suffix
     output_dir = args.output_dir
-    focal_species = args.focal_species
+    focal_group = args.focal_group
     metadata_path = args.metadata
     contaminants = set(args.contaminants.split(","))
     remove_contaminants = args.remove_contaminants
@@ -127,12 +127,9 @@ def init_cli() -> None:
     if not species_to_group:
         raise ValueError("Metadata file is empty or improperly formatted.")
 
-    # if the focal species provided in the arguments is not found in the species to group dictionary then an error is raised
-    if focal_species not in species_to_group:
-        raise ValueError(f"Focal species '{focal_species}' not found in metadata.")
-
-    # gets the focal group for the focal species
-    focal_group = species_to_group[focal_species]
+    # if the focal group provided in the arguments is not found in the species to group dictionary then an error is raised
+    if focal_group not in species_to_group.values():
+        raise ValueError(f"Focal group '{focal_group}' not found in metadata.")
 
     # prints quick stats before the run begins
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -148,7 +145,6 @@ def init_cli() -> None:
         ("tree_dir",             tree_dir,                    True,  None),
         ("suffix",               tree_suffix,                 False, ".tre"),
         ("output_dir",           output_dir,                  False, "PIRoC_output"),
-        ("focal_species",        focal_species,               True,  None),
         ("focal_group",          focal_group,                 True,  None),
         ("metadata",             metadata_path,               True,  None),
         ("contaminants",         args.contaminants,           False, "Contaminant"),
@@ -179,7 +175,6 @@ def init_cli() -> None:
         "tree_suffix": tree_suffix,
         "output_dir": output_dir,
         "sequence_classifications_dir": sequence_classifications_dir,
-        "focal_species": focal_species,
         "focal_group": focal_group,
         "species_to_group": species_to_group,
         "min_support": args.min_support,

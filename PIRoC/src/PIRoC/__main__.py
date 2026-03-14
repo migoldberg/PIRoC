@@ -33,7 +33,6 @@ def main():
     tree_dir = params["tree_dir"]
     tree_suffix = params["tree_suffix"]
     output_dir = params["output_dir"]
-    focal_species = params["focal_species"]
     focal_group = params["focal_group"]
     species_to_group = params["species_to_group"]
     min_support = params["min_support"]
@@ -51,7 +50,7 @@ def main():
 
     # metrics for the run
     run_metrics = {
-        'no_focal_species_in_tree': 0,
+        'no_focal_group_in_tree': 0,
         'total_trees': 0,
         'total_errors': 0,
         'total_sequences_classified': 0,
@@ -106,12 +105,12 @@ def main():
             # gets the focal leaves
             focal_leaves = [
                 l for l in t.get_leaves()
-                if l.name and parse_species_name(l.name) == focal_species
+                if l.name and species_to_group.get(parse_species_name(l.name), "UNKNOWN") == focal_group
             ]
 
             # if no focal leaves are found, increment the total number of trees with no focal species and continue
             if not focal_leaves:
-                run_metrics['no_focal_species_in_tree'] += 1
+                run_metrics['no_focal_group_in_tree'] += 1
                 continue
 
             # update tree metrics
@@ -128,7 +127,6 @@ def main():
                 # classifies the sequence and returns the classification and metrics
                 classification, metrics = classify_sequence(
                     sequence = sequence,
-                    focal_species = focal_species,
                     focal_group = focal_group,
                     tree = t,
                     species_to_group = species_to_group,
@@ -186,7 +184,7 @@ def main():
 
     # writes the summary file
     summary_file = os.path.join(output_dir, "classification_summary.txt")
-    write_summary(summary_file, focal_species, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, contaminant_names, run_metrics, sequence_classifications)
+    write_summary(summary_file, focal_group, min_support, min_target_purity, max_contaminant_purity, collapse_threshold, contaminant_names, run_metrics, sequence_classifications)
 
     sequence_classifications_file = os.path.join(output_dir, "sequence_classifications.tsv")
     write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics)

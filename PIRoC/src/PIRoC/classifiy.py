@@ -135,23 +135,22 @@ def mrca_clade_contains_contaminant_intruders(group_counts, contaminant_names):
     """
     return any(g in contaminant_names for g in group_counts.keys())
 
-def other_focal_group_leaves_in_clade(species_counts, species_to_group, focal_group, focal_species):
+def other_focal_group_leaves_in_clade(species_counts, species_to_group, focal_group):
     """
     Checks if the clade contains any other focal group sequences other than the one being classified.
     """
 
     # sums the number of focal group sequences in the clade other than the one being classified
-    focal_leavs_in_clade = sum(
+    focal_leaves_in_clade = sum(
         count for sp, count in species_counts.items()
-        if species_to_group.get(sp) == focal_group and sp != focal_species
+        if species_to_group.get(sp) == focal_group
     )
 
     # returns True if there are any other focal group sequences in the clade
-    return focal_leavs_in_clade > 0
+    return focal_leaves_in_clade > 0
 
 def classify_sequence(
     sequence, 
-    focal_species, 
     focal_group, 
     tree, 
     species_to_group, 
@@ -205,10 +204,7 @@ def classify_sequence(
     has_contaminant_in_clade = mrca_clade_contains_contaminant_intruders(group_counts, contaminant_names)
 
     # checks if the clade containing the sequence has any other focal group sequences other than the one being classified
-    has_other_focal_group_leaves_in_clade = other_focal_group_leaves_in_clade(species_counts, species_to_group, focal_group, focal_species)
-
-    # checks if the clade containing the sequence has any other focal species sequences other than the one being classified
-    has_other_focal_species_leaves_in_clade = species_counts.get(focal_species, 0)
+    has_other_focal_group_leaves_in_clade = other_focal_group_leaves_in_clade(species_counts, species_to_group, focal_group)
 
     # ------ Classification ------
     # starts by assuming the sequence should be flagged
@@ -243,8 +239,6 @@ def classify_sequence(
             # adds notes supporting the TARGET classification if the clade contains other focal group or species sequences
             if has_other_focal_group_leaves_in_clade:
                 classification_notes.append("other_focal_group_in_clade")
-            if has_other_focal_species_leaves_in_clade:
-                classification_notes.append("other_focal_species_in_clade")
         elif sequence_on_long_branch:
             # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument 
             # AND the sequence is on a long branch = FLAG
@@ -275,9 +269,7 @@ def classify_sequence(
         "total_leaves": total_leaves,
         "focal_group": focal_group,
         "focal_group_leaves": group_counts.get(focal_group, 0),
-        "focal_species_in_clade": species_counts.get(focal_species, 0),
         "has_other_focal_group_leaves_in_clade": has_other_focal_group_leaves_in_clade,
-        "has_other_focal_species_leaves_in_clade": has_other_focal_species_leaves_in_clade,
         "has_contaminant_in_clade": has_contaminant_in_clade,
         "is_on_long_branch": sequence_on_long_branch,
         "classification_notes": classification_notes
