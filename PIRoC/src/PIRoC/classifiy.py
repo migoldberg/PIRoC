@@ -229,6 +229,10 @@ def classify_sequence(
         # if the node is highly supported AND the clade target group fraction is less than the maximum contaminant purity argument = CONTAMINANT
         classification = "CONTAMINANT"
         classification_notes.append("low_ctgf_high_support")
+    elif has_contaminant_in_clade and clade_target_group_fraction <= max_contaminant_purity:
+        # if the clade contains contaminant intruders AND the clade target group fraction is less than the maximum contaminant purity argument = CONTAMINANT
+        classification = "CONTAMINANT"
+        classification_notes.append("contaminant_in_clade_low_ctgf")
 
     elif high_support and clade_target_group_fraction >= min_target_purity:
         if not sequence_on_long_branch and not has_contaminant_in_clade:
@@ -253,7 +257,7 @@ def classify_sequence(
     else:
         if bootstrap is None or bootstrap < min_support:
             # if the node is not highly supported = FLAG
-            classification_notes.append("low_or_missing_support")
+            classification_notes.append("low_or_missing_support")                
         if clade_target_group_fraction > max_contaminant_purity and clade_target_group_fraction < min_target_purity:
             # if the clade target group fraction is intermediate between the maximum contaminant purity and minimum target purity = FLAG
             classification_notes.append("intermediate_target_group_fraction")
