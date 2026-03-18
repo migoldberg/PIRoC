@@ -13,21 +13,25 @@ setup(
     author="Mark Goldberg",
     license="MIT",
     description=(
-        "A tool for decontamination of inverterbrate transcriptomes using phylogenetic trees"
+        "A tool for decontamination of inverterbrate transcriptomes using phylogenomic trees"
     ),
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     entry_points={"console_scripts": ["PIRoC = PIRoC.__main__:main"]},
-    install_requires=["ete3>=3.1.0"],
+    install_requires=[
+        "ete3>=3.1.0",
+        "numpy>=1.20.0",
+        "biopython>=1.79",
+    ],
     python_requires=">=3.8",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/markgoldberg11/dev-PIRoC",
+    url="https://github.com/migoldberg/PIRoC",
     keywords=[
         "bioinformatics",
         "phylogenetics",
         "contamination",
-        "orthogroups",
+        "phylogenomics",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
