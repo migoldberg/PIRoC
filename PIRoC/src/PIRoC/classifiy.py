@@ -217,7 +217,7 @@ def classify_sequence(
     high_support = bootstrap is not None and bootstrap >= min_support
 
 
-    if sister_clade_metrics["sister_is_pure_contaminant"] and high_support:
+    if sister_clade_metrics["sister_is_pure_contaminant"] and high_support and clade_target_group_fraction <= max_contaminant_purity:
         # if the sister clade(s) are purely contaminants AND the node is highly supported = CONTAMINANT
         classification = "CONTAMINANT"
         classification_notes.append("sister_clade_pure_contaminant")
