@@ -30,7 +30,7 @@ def write_summary(summary_file, focal_group, min_support, min_target_purity, max
             sequence_counts = Counter(sequence_classifications.values())
             f.write("Classification Summary:\n")
             f.write("-" * 40 + "\n")
-            for label in ["TARGET", "CONTAMINANT", "FLAG"]:
+            for label in ["CLEAN", "CONTAMINANT", "FLAG"]:
                 count = sequence_counts.get(label, 0)
                 pct = (count / len(sequence_classifications)) * 100.0
                 f.write(f"  {label:12s}: {count:5d} ({pct:5.1f}%)\n")
@@ -72,7 +72,7 @@ def write_sequence_classifications(sequence_classifications_file, sequence_class
 def write_sequence_lists(sequence_lists_dir, sequence_classifications):
     os.makedirs(sequence_lists_dir, exist_ok=True)
 
-    for label in ["TARGET", "CONTAMINANT", "FLAG"]:
+    for label in ["CLEAN", "CONTAMINANT", "FLAG"]:
         list_file = os.path.join(sequence_lists_dir, f"{label.lower()}_sequences.txt")
         with open(list_file, 'w') as f:
             for sequence_key in sorted(sequence_classifications.keys()):

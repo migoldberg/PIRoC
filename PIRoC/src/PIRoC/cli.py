@@ -40,7 +40,7 @@ def init_cli() -> None:
     Returns/Loads all informatoin from the CLI for the run.
     """
     parser = argparse.ArgumentParser(
-        description="PIRoC: Phylogeny-based orthogroup classification (TARGET / CONTAMINANT / FLAG)"
+        description="PIRoC: Phylogeny-based orthogroup classification (CLEAN / CONTAMINANT / FLAG)"
     )
     parser.add_argument(
         "-t", "--tree_dir", required=True,
@@ -76,7 +76,7 @@ def init_cli() -> None:
     )
     parser.add_argument(
         "--min_target_purity", type=float, default=0.8,
-        help="Minimum clade target group fraction for TARGET classification (default: 0.8)"
+        help="Minimum clade target group fraction for CLEAN classification (default: 0.8)"
     )
     parser.add_argument(
         "--max_contaminant_purity", type=float, default=0.5,

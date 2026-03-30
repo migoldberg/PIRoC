@@ -236,11 +236,11 @@ def classify_sequence(
 
     elif high_support and clade_target_group_fraction >= min_target_purity:
         if not sequence_on_long_branch and not has_contaminant_in_clade:
-            # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument = TARGET
-            classification = "TARGET"
+            # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument = CLEAN
+            classification = "CLEAN"
             classification_notes.append("high_ctgf_high_support")
 
-            # adds notes supporting the TARGET classification if the clade contains other focal group or species sequences
+            # adds notes supporting the CLEAN classification if the clade contains other focal group or species sequences
             if has_other_focal_group_leaves_in_clade:
                 classification_notes.append("other_focal_group_in_clade")
         elif sequence_on_long_branch:
