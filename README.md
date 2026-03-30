@@ -1,54 +1,92 @@
 # PIRoC: Phylogeny-Informed Removal of Contaminants
-By Mark I. Goldberg, Nickellaus G. Roberts, Kevin M. Kocot
+By: Mark I. Goldberg, Nickellaus G. Roberts, Kevin M. Kocot
 
-Kocot Lab  
-Department of Biological Sciences  
-The University of Alabama  
-Tuscaloosa, Alabama, USA  
+Kocot Lab\
+Department of Biological Sciences\
+The University of Alabama\
+Tuscaloosa, Alabama, USA
 
-***
+---
+
 ### Introduction
-A tool that uses phylogenomic trees to classify and remove individual transcript-derived sequences as potential contaminants. PIRoC is intended to be used after OrthoFinder and standard tree-building workflows. The tool accepts these orthogroups (in fasta format), the constructed trees, and a taxa metadata file. In this metadata file, you should assign each taxa a group. This group can be as specific or broad as desired, based on your dataset. A broader group assignment (ie. phylum) would be more conservative, while a more specific group assignment (ie. family) would result in stricter requirements for a sequence to be kept. The final required input is a "focal group", which is the group you seek to decontaminate. For example, if you include a large number of molluscs to decontaminate, and assign them all the group "Mollusca" in the metadata, you would pass "Mollusca" as your focal group. PIRoC will index all sequences in the phylogenomic trees which belong to this assigned group, and perform the classifications. The tool is designed to recognize common contaminants, which should be included in the dataset, as certain groups. By default, this group assignment is "Contaminant" but this can be changed by the user to another name or multiple names.  
-***
 
-### Standard Workflow
-For a PIRoC run, the expected workflow would be the following:
-1. Preperation of a transcriptome dataset.
-2. Identification and inclusion of common contaminants for your focal group.
-3. OrthoFinder
-4. Standard quality control, MSA, and tree building workflows.
-5. Assignment of groups in the metadata file, including your contaminants as "Contaminant".
-6. Run PIRoC
+PIRoC is a tool that uses single-gene trees to screen for exogenous contamination in transcriptomes. Orthologs are identified among taxa of interest plus "lightning rod" taxa representing likely contaminants (e.g., various algae if studying an algae-eater) and gene trees are inferred. PIRoC then evaluates all sequences originating from a defined focal group, and outputs decontaminated sequences.
 
+\
+A PIRoC run requires three inputs to start:
+1. A directory containing **single-gene trees** and corresponding **sequence alignments**.
+2. A metadata file with **group assignments** (e.g., ingroup taxa [Mollusca], ignored outgroup taxa [Outgroup], and ‘lightning rod’ taxa closely related to likely contaminants [Contaminant]) for each taxon.
+3. A **focal group** (the group of taxa that will be decontaminated).
 
-***
+\
+For the metadata file, each taxon in the dataset should be assigned a "group". This group can be as specific or broad as desired. A broader set of groups (i.e., phylum) would result in stricter conditions for a sequence to be classified as clean. A more specific group assignment (i.e., family) would result in less strict conditions for a clean sequence classification. The species ID should correspond to the taxon name in the gene-tree and sequence alignment headers.
 
+**Example Metadata Files**\
+*Example 1*
+```
+species_id                group
+Sinonovacula_constricta   Mollusca
+Crassostrea_gigas         Mollusca
+Architeuthis_dux          Mollusca
+Haliotis_rufescens        Mollusca
 
-### Instillation (Development Build)
+Lingula_anatina           Outgroup
+Eisenia_andrei            Outgroup
 
-    git clone https://github.com/migoldberg/PIRoC
-    cd PIRoC
-    pip install -e .
+Gracilaria_domingensis    Contaminant
+Cryptomonas_paramaecium   Contaminant
+Andalucia_godoyi          Contaminant
+Phaeodactylum_tricornutum Contaminant
+Polarella_glacialis       Contaminant
+```
+*Example 2*
+```
+species_id                group
+Sinonovacula_constricta   Bivalvia
+Crassostrea_gigas         Bivalvia
+Architeuthis_dux          Cephalopada
+Haliotis_rufescens        Gastropoda
 
-Required Packages include Numpy and BioPython. The tool was written in Python 3.11.
+Lingula_anatina           Outgroup
+Eisenia_andrei            Outgroup
 
-***
+Gracilaria_domingensis    Contaminant
+Cryptomonas_paramaecium   Contaminant
+Andalucia_godoyi          Contaminant
+Phaeodactylum_tricornutum Contaminant
+Polarella_glacialis       Contaminant
+```
 
-### Example
-Here is an example command for running PIRoC using a dataset of 22 molluscs, 2 related taxa, and 17 common contaminants in molluscs. 
+---
 
-`Command:`
+### Installation
+PIRoC is still in development and has therefore not yet been published on PyPI for installation via pip. It can be installed by cloning the source code from this GitHub repository. 
 
-    PIRoC  \
-	    --tree_dir  $TREE_DIR  \
-	    --focal_group  Mollusca  \
-	    --metadata  metadata.tsv  \
-	    --remove_contaminants
+```
+git clone https://github.com/migoldberg/PIRoC
+cd PIRoC
+pip install -e .
+```
+Required packages include Numpy and BioPython. PIRoC was written in Python 3.11. These required packages should automatically be installed when the command above is run.
 
-  
-  `metadata.tsv`
+---
 
-  ```tsv
+### Example Run
+Here is an example command from running PIRoC. These commands were used for evaluation of these methods with a dataset of 22 molluscs, two related outgroup taxa (one annelid and one brachiopod), and 17 diverse bait eukaryotes representing likely contamination in filter-feeding bivalves. 
+
+\
+`Command`
+```
+PIRoC  \
+    --tree_dir  $TREE_DIR  \
+    --focal_group  Mollusca  \
+    --metadata  metadata.tsv  \
+    --remove_contaminants
+```
+
+\
+`metadata.tsv`
+```
 species_id	group
 adux	Mollusca
 npom	Mollusca
@@ -95,8 +133,12 @@ Thecamonas_trahens_GCF_000142905.1	Contaminant
 Paramecium_tetraurelia_GCF_000165425.1	Contaminant
 ```
 
-***
-### Arguments
+\
+Prior to running PIRoC for this dataset, OrthoFinder (2.5.4; Emms and Kelly 2019) was used for the inference of orthogroups. To simulate a standard workflow, an edited version of the pipeline of Kocot et al. (2017) was used for quality control, multiple sequence alignment and tree-building.
+
+---
+
+### Arguments/CLI Options
 
 | Argument                 | Flag(s)                        | Description                                                        | Default        |
 | ------------------------ | ------------------------------ | ------------------------------------------------------------------ | -------------- |
@@ -111,10 +153,20 @@ Paramecium_tetraurelia_GCF_000165425.1	Contaminant
 | `min_target_purity`      | `--min_target_purity`          | The minimum fraction of sequences that must belong to the focal group in a clade for a TARGET classification (upper bound of `max_contaminant_purity`)            | `0.8`          |
 | `max_contaminant_purity` | `--max_contaminant_purity`     | The highest fraction of sequences that can belong to the focal group in a clade for a CONTAMINANT classification (lower bound of `min_target_purity`)        | `0.5`          |
 | `review_flags`           | `--review-flags`               | Interactively review flagged sequences via CLI (in development)                     | `False`        |
-| `quiet`                  | `--quiet`                      | Enable quiet mode (minimal console output)                         | `False`        |
+| `loud`                  | `--loud`                      | Enable detailed console output                        | `False`        |
 
-***
+
+
+---
+
 ### Notes
-For help, suggestions, or other feedback please contact migoldberg@crimson.ua.edu. 
+For help, suggestions, or other feedback, please contact migoldberg@crimson.ua.edu.
 
-Thank you to Dr. Kevin Kocot, Dr. Nickellaus Roberts, and the Kocot Lab for your contributions to and support of this project.
+This project will be presented at the Undergraduate Research and Creative Activities (URCA) conference in April of 2026 at the University of Alabama.
+
+---
+
+### References
+1. Kocot, K. M., Struck, T. H., Merkel, J., Waits, D. S., Todt, C., Brannock, P. M., Weese, D. A., Cannon, J. T., Moroz, L. L., Lieb, B., & Halanych, K. M. (2017). **Phylogenomics of Lophotrochozoa with Consideration of Systematic Error.** *Systematic Biology*, 66(2), 256–282.   https://doi.org/10.1093/sysbio/syw079
+
+2. Emms, D. M., & Kelly, S. (2019). **OrthoFinder: Phylogenetic orthology inference for comparative genomics.** *Genome Biology*, 20, 238. https://doi.org/10.1186/s13059-019-1832-y
