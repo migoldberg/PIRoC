@@ -38,7 +38,7 @@ def clean_fasta(og_id, contaminants, fasta_path, clean_dir, species_to_group, co
 
     return clean_fasta
 
-def clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, quiet):
+def clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, loud):
     trees = defaultdict(dict)
 
     for sequence_id, classification in sequence_classifications.items():
@@ -55,7 +55,7 @@ def clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contamina
       
         fasta_path = fasta_in_tree_dir(tree_dir, og_id)
 
-        if not quiet:
+        if loud:
             if fasta_path:
                 clean_fasta(og_id, contaminants, fasta_path, clean_dir, species_to_group, contaminant_names)
                 print(f"[{og_id}] FASTA file cleaned")

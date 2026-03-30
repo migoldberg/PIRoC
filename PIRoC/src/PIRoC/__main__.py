@@ -39,7 +39,7 @@ def main():
     max_contaminant_purity = params["max_contaminant_purity"]
     contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
-    quiet = params["quiet"]
+    loud = params["loud"]
     review_flags = params["review_flags"]
     
     # create empty dictionaries to store sequence classifications and metrics
@@ -143,7 +143,7 @@ def main():
                 notes = ",".join(metrics["classification_notes"]) if metrics["classification_notes"] else "-"
 
                 # prints quick classification information for the sequence to the console during the run               
-                if not quiet:
+                if loud:
                     print(
                         f"[{og_id}] {sequence_name:40s} | {classification:12s} | "
                         f"bs={metrics['bootstrap']:>5} | "
@@ -158,7 +158,7 @@ def main():
             print(f"error: {e}")
             run_metrics['total_errors'] += 1
 
-    if quiet:
+    if not loud:
         print()
 
     if review_flags:
@@ -166,7 +166,7 @@ def main():
 
     # if the remove-contaminants flag is enabled, the function to produce clean trees is called
     if remove_contaminants:
-        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, quiet)
+        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, loud)
         print()
         
 
@@ -185,7 +185,7 @@ def main():
 
     print("\033[4mRun Complete\033[0m")
     print(f"Finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"https://github.com/migoldberg/PIRoC\n\n")
+    print(f"https://github.com/migoldberg/PIRoC\n")
 
     sys.stdout = logger.terminal
     logger.close()

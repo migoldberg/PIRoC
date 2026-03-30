@@ -87,8 +87,8 @@ def init_cli() -> None:
         help="At the end of the run, review the flagged sequences via CLI and make final decisions"
     )
     parser.add_argument(
-        "--quiet", action="store_true",
-        help="Enable quiet mode (minimul output to the console)"
+        "--loud", action="store_true",
+        help="Enable detailed console output"
     )
 
     # parses the arguments
@@ -101,7 +101,7 @@ def init_cli() -> None:
     metadata_path = args.metadata
     contaminants = set(args.contaminants.split(","))
     remove_contaminants = args.remove_contaminants
-    quiet = args.quiet
+    loud = args.loud
     review_flags = args.review_flags
 
     # creates the output directory
@@ -148,7 +148,7 @@ def init_cli() -> None:
         ("min_support",          args.min_support,            False, 70.0),
         ("min_target_purity",    args.min_target_purity,      False, 0.8),
         ("max_contaminant_purity", args.max_contaminant_purity, False, 0.5),
-        ("quiet",                quiet,                       False, False),
+        ("loud",                 loud,                        False, False),
         ("review_flags",         review_flags,                False, False),
     ]
     max_name_len = max(len(name) for name, *_ in params_display)
@@ -178,6 +178,6 @@ def init_cli() -> None:
         "contaminants": contaminants,
         "logger": logger,
         "remove_contaminants": remove_contaminants,
-        "quiet": quiet,
+        "loud": loud,
         "review_flags": review_flags,
     }
