@@ -236,9 +236,15 @@ def classify_sequence(
 
     elif high_support and clade_target_group_fraction >= min_target_purity:
         if not sequence_on_long_branch and not has_contaminant_in_clade:
-            # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument = CLEAN
-            classification = "CLEAN"
-            classification_notes.append("high_ctgf_high_support")
+           
+            if sister_clade_metrics["sister_is_pure_contaminant"]:
+                # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument AND the sister clade is purely contaminants = FLAG
+               classification = "FLAG"
+               classification_notes.append("high_ctgf_high_support_but_sister_clade_pure_contaminant")
+            else:
+                # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument = CLEAN
+                classification = "CLEAN"
+                classification_notes.append("high_ctgf_high_support")
 
             # adds notes supporting the CLEAN classification if the clade contains other focal group or species sequences
             if has_other_focal_group_leaves_in_clade:
