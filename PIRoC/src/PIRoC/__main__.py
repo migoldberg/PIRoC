@@ -152,7 +152,7 @@ def main():
                         f"notes={notes}"
                     )
                 else:
-                    print(f"\r Classifying Sequences: [{run_metrics['total_trees']}/{total_tree_files}]", end="", flush=True)
+                    print(f"\r  Classifying Sequences: [{run_metrics['total_trees']}/{total_tree_files}]", end="", flush=True)
                 
         except Exception as e:
             print(f"error: {e}")
@@ -184,8 +184,8 @@ def main():
     write_sequence_lists(sequence_lists_dir, sequence_classifications)  
 
     print("\033[4mRun Complete\033[0m")
-    print(f"Finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"https://github.com/migoldberg/PIRoC\n")
+    print(f"  Finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"  https://github.com/migoldberg/PIRoC\n")
 
     sys.stdout = logger.terminal
     logger.close()

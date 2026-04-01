@@ -65,7 +65,7 @@ def clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contamina
             fasta_path = fasta_in_tree_dir(tree_dir, og_id)
             if fasta_path:
                 clean_fasta(og_id, contaminants, fasta_path, clean_dir, species_to_group, contaminant_names)
-            print(f"\r Cleaning Orthogroups: [{i}/{total_trees}]", end="", flush=True)
+            print(f"\r  Cleaning Orthogroups: [{i}/{total_trees}]", end="", flush=True)
        
     return clean_dir
        

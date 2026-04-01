@@ -69,3 +69,27 @@ def get_group_from_species_name(leaf_name, species_to_group):
     """
     species_name = parse_species_name(leaf_name)
     return species_to_group.get(species_name, "UNKNOWN")
+
+def verify_metadata(species_to_group, tree_dir, tree_suffix, focal_group):
+    # if the species to group dictionary is empty or improperly formatted then an error is raised
+    if not species_to_group:
+        raise ValueError("Metadata file is empty or improperly formatted.")
+
+    # if the focal group provided in the arguments is not found in the species to group dictionary then an error is raised
+    if focal_group not in species_to_group.values():
+        raise ValueError(f"Focal group '{focal_group}' not found in metadata.")
+
+    missing_species = []
+
+    for tree_file in os.listdir(tree_dir):
+        if tree_file.endswith(tree_suffix):
+            tree = Tree(os.path.join(tree_dir, tree_file))
+            for leaf in tree.get_leaves():
+                if parse_species_name(leaf.name) not in species_to_group:
+                    missing_species.append(parse_species_name(leaf.name))
+
+    if missing_species:
+        unique_missing_species = sorted(set(missing_species))
+        print(f"WARNING: {len(unique_missing_species)} species not found in metadata:")
+        for species in unique_missing_species:
+            print(f"  - {species}")

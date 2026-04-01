@@ -12,7 +12,7 @@ from datetime import datetime
 from collections import Counter, defaultdict
 from ete3 import Tree
 
-from .metadata import load_species_metadata, parse_species_name
+from .metadata import load_species_metadata, parse_species_name, verify_metadata
 
 class Logger:
     """
@@ -119,21 +119,15 @@ def init_cli() -> None:
     # loads the species to group dictionary from the metadata file
     species_to_group = load_species_metadata(metadata_path)
 
-    # if the species to group dictionary is empty or improperly formatted then an error is raised
-    if not species_to_group:
-        raise ValueError("Metadata file is empty or improperly formatted.")
-
-    # if the focal group provided in the arguments is not found in the species to group dictionary then an error is raised
-    if focal_group not in species_to_group.values():
-        raise ValueError(f"Focal group '{focal_group}' not found in metadata.")
+    verify_metadata(species_to_group, tree_dir, tree_suffix, focal_group)
 
     # prints quick stats before the run begins
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     print()
     print("\033[4mPIRoC - Phylogeny-Informed Removal of Contaminants\033[0m")
-    print(f"Version 1.0.0")
-    print(f"Run Date: {timestamp}\n")
+    print(f"  Version 1.0.0")
+    print(f"  Run Date: {timestamp}\n")
 
     print("\033[4mRun Parameters\033[0m")
     print("  [~] required   [ ] default   [X] user set\n")
