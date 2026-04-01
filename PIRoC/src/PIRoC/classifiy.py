@@ -146,8 +146,8 @@ def other_focal_group_leaves_in_clade(species_counts, species_to_group, focal_gr
         if species_to_group.get(sp) == focal_group
     )
 
-    # returns True if there are any other focal group sequences in the clade
-    return focal_leaves_in_clade > 0
+    # returns True if there are any other focal group sequences in the clade (>1 because the one being classified is not included)
+    return focal_leaves_in_clade > 1
 
 def classify_sequence(
     sequence, 
