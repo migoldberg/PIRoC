@@ -182,6 +182,19 @@ def classify_sequence(
             "bootstrap": "NA",
             "clade_target_group_fraction": 0.0,
             "total_leaves": 1,
+            "focal_group": focal_group,
+            "focal_group_leaves": 0,
+            "n_species_in_clade": 0,
+            "n_contaminant_leaves_in_clade": 0,
+            "clade_group_composition": "",
+            "has_other_focal_group_leaves_in_clade": False,
+            "has_contaminant_in_clade": False,
+            "is_on_long_branch": False,
+            "sister_contains_contaminants": False,
+            "sister_contains_focal_group": False,
+            "sister_is_pure_contaminant": False,
+            "sister_group_composition": "",
+            "sister_total_leaves": 0,
             "classification_notes": ["sequence_at_root"]
         }
     
@@ -291,14 +304,28 @@ def classify_sequence(
     # creates a dictionary of metrics for the sequence
     metrics = {
         "sequence_name": sequence_name,
-        "bootstrap": bootstrap if bootstrap is not None else "NA",
+        "bootstrap": bootstrap,
         "clade_target_group_fraction": clade_target_group_fraction,
         "total_leaves": total_leaves,
         "focal_group": focal_group,
         "focal_group_leaves": group_counts.get(focal_group, 0),
+        "n_species_in_clade": len(species_counts),
+        "n_contaminant_leaves_in_clade": sum(
+            count for g, count in group_counts.items() if g in contaminant_names
+        ),
+        "clade_group_composition": ";".join(
+            f"{g}:{c}" for g, c in sorted(group_counts.items())
+        ),
         "has_other_focal_group_leaves_in_clade": has_other_focal_group_leaves_in_clade,
         "has_contaminant_in_clade": has_contaminant_in_clade,
         "is_on_long_branch": sequence_on_long_branch,
+        "sister_contains_contaminants": sister_clade_metrics["sister_contains_contaminants"],
+        "sister_contains_focal_group": sister_clade_metrics["sister_contains_focal_group"],
+        "sister_is_pure_contaminant": sister_clade_metrics["sister_is_pure_contaminant"],
+        "sister_group_composition": ";".join(
+            f"{g}:{c}" for g, c in sorted(sister_clade_metrics["sister_groups"].items())
+        ),
+        "sister_total_leaves": sum(sister_clade_metrics["sister_species"].values()),
         "classification_notes": classification_notes
     }
 

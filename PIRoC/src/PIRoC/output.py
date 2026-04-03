@@ -41,10 +41,16 @@ def write_summary(summary_file, focal_group, min_support, min_target_purity, max
 def write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics):
     with open(sequence_classifications_file, 'w') as f:
         header = [
-            "OG_ID", "Sequence_Name", "Classification", "Bootstrap", "Clade_Target_Group_Fraction",
-            "Total_Leaves", "Focal_Group", "n_Focal_Group_Leaves_In_Clade",
-            "Has_Other_Focal_Group_In_Clade", "Has_Contaminant_In_Clade",
-            "Is_Long_Branch", "Confidence_Notes"
+            "OG_ID", "Sequence_Name",
+            "Classification", "Confidence_Notes",
+            "Bootstrap", "Is_Long_Branch",
+            "Total_Leaves", "n_Species_In_Clade",
+            "Focal_Group", "n_Focal_Group_Leaves_In_Clade", "Has_Other_Focal_Group_In_Clade",
+            "n_Contaminant_Leaves_In_Clade", "Has_Contaminant_In_Clade",
+            "Clade_Target_Group_Fraction", "Clade_Group_Composition",
+            "Sister_Total_Leaves", "Sister_Contains_Focal_Group",
+            "Sister_Contains_Contaminants", "Sister_Is_Pure_Contaminant",
+            "Sister_Group_Composition",
         ]
         f.write("\t".join(header) + "\n")
         
@@ -55,15 +61,23 @@ def write_sequence_classifications(sequence_classifications_file, sequence_class
                 og_id,
                 sequence_name,
                 sequence_classifications[sequence_key],
+                ";".join(m["classification_notes"]),
                 str(m["bootstrap"]),
-                f"{m['clade_target_group_fraction']:.4f}",
+                str(m["is_on_long_branch"]),
                 str(m["total_leaves"]),
+                str(m["n_species_in_clade"]),
                 str(m["focal_group"]),
                 str(m["focal_group_leaves"]),
                 str(m["has_other_focal_group_leaves_in_clade"]),
+                str(m["n_contaminant_leaves_in_clade"]),
                 str(m["has_contaminant_in_clade"]),
-                str(m["is_on_long_branch"]),
-                ";".join(m["classification_notes"])
+                f"{m['clade_target_group_fraction']:.4f}",
+                str(m["clade_group_composition"]),
+                str(m["sister_total_leaves"]),
+                str(m["sister_contains_focal_group"]),
+                str(m["sister_contains_contaminants"]),
+                str(m["sister_is_pure_contaminant"]),
+                str(m["sister_group_composition"]),
             ]
             f.write("\t".join(row) + "\n")
 
