@@ -63,8 +63,8 @@ def analyze_sister_clades(focal_mrca, species_to_group, focal_group, contaminant
         return {
             "sister_groups": Counter(),
             "sister_species": Counter(),
-            "has_contaminant_sister": False,
-            "has_same_group_sister": False,
+            "sister_contains_contaminants": False,
+            "sister_contains_focal_group": False,
             "sister_is_pure_contaminant": False
         }
     
@@ -108,8 +108,8 @@ def analyze_sister_clades(focal_mrca, species_to_group, focal_group, contaminant
     return {
         "sister_groups": sister_groups,
         "sister_species": sister_species,
-        "has_contaminant_sister": has_contaminant,
-        "has_same_group_sister": has_same_group,
+        "sister_contains_contaminants": has_contaminant,
+        "sister_contains_focal_group": has_same_group,
         "sister_is_pure_contaminant": sister_is_pure_contaminant
     }
 
@@ -220,56 +220,73 @@ def classify_sequence(
     if sister_clade_metrics["sister_is_pure_contaminant"] and high_support and clade_target_group_fraction <= max_contaminant_purity:
         # if the sister clade(s) are purely contaminants AND the node is highly supported = CONTAMINANT
         classification = "CONTAMINANT"
-        classification_notes.append("sister_clade_pure_contaminant")
+        classification_notes.append("sister_clades_pure_contaminants")
+        classification_notes.append("high_support")
+        classification_notes.append("low_ctgf")
     elif sequence_on_long_branch and has_contaminant_in_clade:
         # if the sequence is on a long branch AND the clade contains contaminant intruders = CONTAMINANT
         classification = "CONTAMINANT"
-        classification_notes.append("long_branch_with_contaminant_in_clade")
+        classification_notes.append("sequence_on_long_branch")
+        classification_notes.append("contaminant_in_clade")
+        classification_notes.append("low_ctgf")
     elif high_support and clade_target_group_fraction <= max_contaminant_purity:
         # if the node is highly supported AND the clade target group fraction is less than the maximum contaminant purity argument = CONTAMINANT
         classification = "CONTAMINANT"
-        classification_notes.append("low_ctgf_high_support")
+        classification_notes.append("high_support")
+        classification_notes.append("low_ctgf")
     elif has_contaminant_in_clade and clade_target_group_fraction <= max_contaminant_purity:
         # if the clade contains contaminant intruders AND the clade target group fraction is less than the maximum contaminant purity argument = CONTAMINANT
         classification = "CONTAMINANT"
-        classification_notes.append("contaminant_in_clade_low_ctgf")
+        classification_notes.append("contaminant_in_clade")
+        classification_notes.append("low_ctgf")
 
     elif high_support and clade_target_group_fraction >= min_target_purity:
         if not sequence_on_long_branch and not has_contaminant_in_clade:
            
             if sister_clade_metrics["sister_is_pure_contaminant"]:
-                # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument AND the sister clade is purely contaminants = FLAG
-               classification = "FLAG"
-               classification_notes.append("high_ctgf_high_support_but_sister_clade_pure_contaminant")
+                # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument AND the sister clade is purely contaminants = CONTAMINANT
+               classification = "CONTAMINANT"
+               classification_notes.append("high_support")
+               classification_notes.append("high_ctgf")
+               classification_notes.append("sister_clades_pure_contaminants")
+            elif sister_clade_metrics["sister_contains_focal_group"] and sister_clade_metrics["sister_contains_contaminants"]:
+                # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument AND the sister clade contains focal group sequences AND the sister clade has contaminant intruders = FLAG
+                classification = "FLAG"
+                classification_notes.append("high_support")
+                classification_notes.append("high_ctgf")
+                classification_notes.append("sister_clades_mixed_contaminants")
             else:
                 # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument = CLEAN
                 classification = "CLEAN"
-                classification_notes.append("high_ctgf_high_support")
+                classification_notes.append("high_support")
+                classification_notes.append("high_ctgf")
 
             # adds notes supporting the CLEAN classification if the clade contains other focal group or species sequences
             if has_other_focal_group_leaves_in_clade:
-                classification_notes.append("other_focal_group_in_clade")
+                classification_notes.append("other_focal_group_sequences_in_clade")
         elif sequence_on_long_branch:
-            # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument 
-            # AND the sequence is on a long branch = FLAG
+            # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument AND the sequence is on a long branch = FLAG
             classification = "FLAG"
-            classification_notes.append("high_ctgf_but_long_branch")
+            classification_notes.append("high_support")
+            classification_notes.append("high_ctgf")
+            classification_notes.append("sequence_on_long_branch")
         elif has_contaminant_in_clade:
-            # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument 
-            # AND the clade contains contaminant intruders = FLAG
+            # if the node is highly supported AND the clade target group fraction is greater than the minimum target purity argument AND the clade contains contaminant intruders = FLAG
             classification = "FLAG"
-            classification_notes.append("high_ctgf_but_contaminant_in_clade")
+            classification_notes.append("high_support")
+            classification_notes.append("high_ctgf")
+            classification_notes.append("contaminant_in_clade")
     
     else:
         if bootstrap is None or bootstrap < min_support:
             # if the node is not highly supported = FLAG
-            classification_notes.append("low_or_missing_support")                
+            classification_notes.append("low_support")                
         if clade_target_group_fraction > max_contaminant_purity and clade_target_group_fraction < min_target_purity:
             # if the clade target group fraction is intermediate between the maximum contaminant purity and minimum target purity = FLAG
-            classification_notes.append("intermediate_target_group_fraction")
+            classification_notes.append("intermediate_ctgf")
         if sequence_on_long_branch:
             # if the sequence is on a long branch = FLAG
-            classification_notes.append("long_branch_detected")
+            classification_notes.append("sequence_on_long_branch")
     
     # creates a dictionary of metrics for the sequence
     metrics = {
