@@ -156,7 +156,7 @@ def classify_sequence(
     species_to_group, 
     branch_length_stats, 
     min_support, 
-    min_target_purity, 
+    min_clean_purity, 
     max_contaminant_purity, 
     contaminant_names
     ):
@@ -230,7 +230,7 @@ def classify_sequence(
     high_support = bootstrap is not None and bootstrap >= min_support
 
 
-    if sister_clade_metrics["sister_is_pure_contaminant"] and high_support and clade_target_group_fraction <= max_contaminant_purity:
+    if sister_clade_metrics["sister_is_pure_contaminant"] and high_support and clade_target_group_fraction <= min_clean_purity:
         # if the sister clade(s) are purely contaminants AND the node is highly supported = CONTAMINANT
         classification = "CONTAMINANT"
         classification_notes.append("sister_clades_pure_contaminants")
@@ -253,7 +253,7 @@ def classify_sequence(
         classification_notes.append("contaminant_in_clade")
         classification_notes.append("low_ctgf")
 
-    elif high_support and clade_target_group_fraction >= min_target_purity:
+    elif high_support and clade_target_group_fraction >= min_clean_purity:
         if not sequence_on_long_branch and not has_contaminant_in_clade:
            
             if sister_clade_metrics["sister_is_pure_contaminant"]:
@@ -294,7 +294,7 @@ def classify_sequence(
         if bootstrap is None or bootstrap < min_support:
             # if the node is not highly supported = FLAG
             classification_notes.append("low_support")                
-        if clade_target_group_fraction > max_contaminant_purity and clade_target_group_fraction < min_target_purity:
+        if clade_target_group_fraction > max_contaminant_purity and clade_target_group_fraction < min_clean_purity:
             # if the clade target group fraction is intermediate between the maximum contaminant purity and minimum target purity = FLAG
             classification_notes.append("intermediate_ctgf")
         if sequence_on_long_branch:

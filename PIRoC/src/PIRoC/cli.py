@@ -75,7 +75,7 @@ def init_cli() -> None:
         help="Minimum bootstrap support for confident classification (default: 70)"
     )
     parser.add_argument(
-        "--min_target_purity", type=float, default=0.8,
+        "--min_clean_purity", type=float, default=0.8,
         help="Minimum clade target group fraction for CLEAN classification (default: 0.8)"
     )
     parser.add_argument(
@@ -140,7 +140,7 @@ def init_cli() -> None:
         ("contaminants",         args.contaminants,           False, "Contaminant"),
         ("remove_contaminants",  remove_contaminants,         False, False),
         ("min_support",          args.min_support,            False, 70.0),
-        ("min_target_purity",    args.min_target_purity,      False, 0.8),
+        ("min_clean_purity",    args.min_clean_purity,      False, 0.8),
         ("max_contaminant_purity", args.max_contaminant_purity, False, 0.5),
         ("loud",                 loud,                        False, False),
         ("review_flags",         review_flags,                False, False),
@@ -167,7 +167,7 @@ def init_cli() -> None:
         "focal_group": focal_group,
         "species_to_group": species_to_group,
         "min_support": args.min_support,
-        "min_target_purity": args.min_target_purity,
+        "min_clean_purity": args.min_clean_purity,
         "max_contaminant_purity": args.max_contaminant_purity,
         "contaminants": contaminants,
         "logger": logger,

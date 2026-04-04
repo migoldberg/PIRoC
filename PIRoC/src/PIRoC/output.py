@@ -8,7 +8,7 @@ import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict
 
-def write_summary(summary_file, focal_group, min_support, min_target_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications):
+def write_summary(summary_file, focal_group, min_support, min_clean_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications):
     with open(summary_file, 'w') as f:
         f.write("PIRoC Classification Summary\n")
         f.write("=" * 60 + "\n\n")
@@ -16,7 +16,7 @@ def write_summary(summary_file, focal_group, min_support, min_target_purity, max
         f.write("Parameters:\n")
         f.write(f"  Focal group:       {focal_group}\n")
         f.write(f"  Min support:         {min_support}\n")
-        f.write(f"  Min target purity:   {min_target_purity}\n")
+        f.write(f"  Min clean purity:   {min_clean_purity}\n")
         f.write(f"  Max contam purity:   {max_contaminant_purity}\n")
         f.write(f"  Contaminants:        {', '.join(contaminant_names)}\n\n")
         

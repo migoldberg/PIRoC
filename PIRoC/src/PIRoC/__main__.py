@@ -35,7 +35,7 @@ def main():
     focal_group = params["focal_group"]
     species_to_group = params["species_to_group"]
     min_support = params["min_support"]
-    min_target_purity = params["min_target_purity"]
+    min_clean_purity = params["min_clean_purity"]
     max_contaminant_purity = params["max_contaminant_purity"]
     contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
@@ -123,7 +123,7 @@ def main():
                     species_to_group = species_to_group,
                     branch_length_stats = branch_length_stats,
                     min_support = min_support,
-                    min_target_purity = min_target_purity,
+                    min_clean_purity = min_clean_purity,
                     max_contaminant_purity = max_contaminant_purity,
                     contaminant_names = contaminant_names
                 )
@@ -175,7 +175,7 @@ def main():
 
     # writes the summary file
     summary_file = os.path.join(output_dir, "classification_summary.txt")
-    write_summary(summary_file, focal_group, min_support, min_target_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications)
+    write_summary(summary_file, focal_group, min_support, min_clean_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications)
 
     sequence_classifications_file = os.path.join(output_dir, "sequence_classifications.tsv")
     write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics)
