@@ -150,10 +150,10 @@ Prior to running PIRoC for this dataset, OrthoFinder (2.5.4; Emms and Kelly 2019
 | `contaminants`           | `--contaminants`               | Comma-separated list of known contaminant group names              | `Contaminant`  |
 | `remove_contaminants`    | `-rm`, `--remove_contaminants` | Remove contaminant sequences from orthogroups after classification | `False`        |
 | `min_support`            | `--min_support`                | Minimum bootstrap support for confident classification             | `70.0`         |
-| `min_target_purity`      | `--min_target_purity`          | The minimum fraction of sequences that must belong to the focal group in a clade for a TARGET classification (upper bound of `max_contaminant_purity`)            | `0.8`          |
+| `min_clean_purity`      | `--min_clean_purity`          | The minimum fraction of sequences that must belong to the focal group in a clade for a CLEAN classification (upper bound of `max_contaminant_purity`)            | `0.8`          |
 | `max_contaminant_purity` | `--max_contaminant_purity`     | The highest fraction of sequences that can belong to the focal group in a clade for a CONTAMINANT classification (lower bound of `min_target_purity`)        | `0.5`          |
 | `review_flags`           | `--review-flags`               | Interactively review flagged sequences via CLI (in development)                     | `False`        |
-| `loud`                  | `--loud`                      | Enable detailed console output                        | `False`        |
+| `loud`                   | `--loud`                       | Enable detailed console output                        | `False`        |
 
 
 
