@@ -65,6 +65,7 @@ PIRoC is still in development and has therefore not yet been published on PyPI f
 ```
 git clone https://github.com/migoldberg/PIRoC
 cd PIRoC
+cd PIRoC
 pip install -e .
 ```
 Required packages include Numpy and BioPython. PIRoC was written in Python 3.11. These required packages should automatically be installed when the command above is run.
