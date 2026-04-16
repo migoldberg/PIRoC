@@ -7,7 +7,7 @@ name = "PIRoC"
 version = "0.1.0"
 description = "A tool for decontamination of inverterbrate transcriptomes using phylogenetic trees"
 readme = "README.md"
-license = {text = "MIT"}
+license = {text = "GPL-3.0"}
 requires-python = ">=3.8"
 authors = [
     {name = "Mark Goldberg"}
@@ -21,7 +21,7 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -32,6 +32,8 @@ classifiers = [
 ]
 dependencies = [
     "ete3>=3.1.0",
+    "numpy>=1.20.0",
+    "biopython>=1.79",
 ]
 
 [project.optional-dependencies]
@@ -44,8 +46,8 @@ dev = [
 PIRoC = "PIRoC.__main__:main"
 
 [project.urls]
-Homepage = "https://github.com/markgoldberg11/dev-phyloscreen"
-Repository = "https://github.com/markgoldberg11/dev-phyloscreen"
+Homepage = "https://github.com/migoldberg/PIRoC"
+Repository = "https://github.com/migoldberg/PIRoC"
 
 [tool.setuptools.packages.find]
 where = ["src"]
