@@ -18,7 +18,7 @@ from .cli import init_cli
 from .metadata import parse_species_name, get_group_from_species_name
 from .root import root_tree_at_contaminant
 from .branch_length import compute_branch_length_stats
-from .classifiy import classify_sequence
+from .classify import classify_sequence
 from .output import write_summary, write_sequence_classifications, write_sequence_lists
 from .clean_orthogroups import clean_orthogroups
 from .review_flags import start_review_flags
