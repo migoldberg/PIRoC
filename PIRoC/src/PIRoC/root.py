@@ -3,7 +3,6 @@ root.py
 Attempts to root the tree at a contaminant clade if possible.
 """
 
-from inspect import ismodule
 import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict

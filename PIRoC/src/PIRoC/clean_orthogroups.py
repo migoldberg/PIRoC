@@ -11,7 +11,6 @@ from collections import Counter, defaultdict
 from ete3 import Tree
 from Bio import SeqIO
 
-from .support import collapse_low_support_nodes
 from .metadata import get_group_from_species_name
 
 def fasta_in_tree_dir(tree_dir, og_id):

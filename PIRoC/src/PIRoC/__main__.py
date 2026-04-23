@@ -21,7 +21,6 @@ from .branch_length import compute_branch_length_stats
 from .classify import classify_sequence
 from .output import write_summary, write_sequence_classifications, write_sequence_lists
 from .clean_orthogroups import clean_orthogroups
-from .review_flags import start_review_flags
 
 def main():
     params = init_cli()
@@ -40,7 +39,6 @@ def main():
     contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
     loud = params["loud"]
-    review_flags = params["review_flags"]
     
     # create empty dictionaries to store sequence classifications and metrics
     sequence_classifications = {} # og_id::sequence_name -> classification
@@ -160,9 +158,6 @@ def main():
 
     if not loud:
         print()
-
-    if review_flags:
-        start_review_flags(tree_dir, tree_suffix, sequence_classifications, sequence_metrics)
 
     # if the remove-contaminants flag is enabled, the function to produce clean trees is called
     if remove_contaminants:

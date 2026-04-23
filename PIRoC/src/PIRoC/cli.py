@@ -83,10 +83,6 @@ def init_cli() -> None:
         help="Maximum clade target group fraction for CONTAMINANT classification (default: 0.5)"
     )
     parser.add_argument(
-        "--review-flags", action="store_true",
-        help="At the end of the run, review the flagged sequences via CLI and make final decisions"
-    )
-    parser.add_argument(
         "--loud", action="store_true",
         help="Enable detailed console output"
     )
@@ -102,7 +98,6 @@ def init_cli() -> None:
     contaminants = set(args.contaminants.split(","))
     remove_contaminants = args.remove_contaminants
     loud = args.loud
-    review_flags = args.review_flags
 
     # creates the output directory
     os.makedirs(output_dir, exist_ok=True)
@@ -143,7 +138,6 @@ def init_cli() -> None:
         ("min_clean_purity",    args.min_clean_purity,      False, 0.8),
         ("max_contaminant_purity", args.max_contaminant_purity, False, 0.5),
         ("loud",                 loud,                        False, False),
-        ("review_flags",         review_flags,                False, False),
     ]
     max_name_len = max(len(name) for name, *_ in params_display)
     for name, value, required, default in params_display:
@@ -173,5 +167,4 @@ def init_cli() -> None:
         "logger": logger,
         "remove_contaminants": remove_contaminants,
         "loud": loud,
-        "review_flags": review_flags,
     }
