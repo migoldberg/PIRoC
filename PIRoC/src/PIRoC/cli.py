@@ -71,6 +71,10 @@ def init_cli() -> None:
         help="After classification remove contaminant sequences from the orthogroups."
     )
     parser.add_argument(
+        "--keep_known_contaminants", action="store_true",
+        help="After classification keep known contaminant sequences in the orthogroups."
+    )
+    parser.add_argument(
         "--min_support", type=float, default=70.0,
         help="Minimum bootstrap support for confident classification (default: 70)"
     )
@@ -97,8 +101,9 @@ def init_cli() -> None:
     metadata_path = args.metadata
     contaminants = set(args.contaminants.split(","))
     remove_contaminants = args.remove_contaminants
+    keep_known_contaminants = args.keep_known_contaminants
     loud = args.loud
-
+    
     # creates the output directory
     os.makedirs(output_dir, exist_ok=True)
 
@@ -134,11 +139,13 @@ def init_cli() -> None:
         ("metadata",             metadata_path,               True,  None),
         ("contaminants",         args.contaminants,           False, "Contaminant"),
         ("remove_contaminants",  remove_contaminants,         False, False),
+        ("keep_known_contaminants", keep_known_contaminants, False, False),
         ("min_support",          args.min_support,            False, 70.0),
         ("min_clean_purity",    args.min_clean_purity,      False, 0.8),
         ("max_contaminant_purity", args.max_contaminant_purity, False, 0.5),
         ("loud",                 loud,                        False, False),
     ]
+
     max_name_len = max(len(name) for name, *_ in params_display)
     for name, value, required, default in params_display:
         if required:
@@ -166,5 +173,6 @@ def init_cli() -> None:
         "contaminants": contaminants,
         "logger": logger,
         "remove_contaminants": remove_contaminants,
+        "keep_known_contaminants": keep_known_contaminants,
         "loud": loud,
     }

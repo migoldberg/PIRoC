@@ -24,20 +24,37 @@ def fasta_in_tree_dir(tree_dir, og_id):
             return fasta_path
     return False
 
-def clean_fasta(og_id, contaminants, fasta_path, clean_dir, species_to_group, contaminant_names):
+def write_removed_fasta(contaminants, fasta_path, contaminants_fasta_path):
+    """
+    Writes removed contaminant sequences to a shared fasta file and returns its path.
+    """
+    removed_fasta = (
+        sequence for sequence in SeqIO.parse(fasta_path, "fasta")
+        if sequence.id in contaminants
+    )
+    output_fasta_path = os.path.abspath(contaminants_fasta_path)
+    with open(output_fasta_path, "a") as handle:
+        SeqIO.write(removed_fasta, handle, "fasta")
+
+    return output_fasta_path
+
+def clean_fasta(og_id, contaminants, fasta_path, clean_dir, species_to_group, contaminant_names, keep_known_contaminants):
     """
     Cleans the fasta by removing contaminants.
     """
     clean_fasta = (
         sequence for sequence in SeqIO.parse(fasta_path, "fasta")
         if sequence.id not in contaminants
-        and get_group_from_species_name(sequence.id, species_to_group) not in contaminant_names
+        and (
+            keep_known_contaminants
+            or get_group_from_species_name(sequence.id, species_to_group) not in contaminant_names
+        )
     )
     SeqIO.write(clean_fasta, os.path.join(clean_dir, f"{og_id}.fa"), "fasta")
 
     return clean_fasta
 
-def clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, loud):
+def clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, loud, keep_known_contaminants):
     trees = defaultdict(dict)
 
     for sequence_id, classification in sequence_classifications.items():
@@ -56,15 +73,15 @@ def clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contamina
 
         if loud:
             if fasta_path:
-                clean_fasta(og_id, contaminants, fasta_path, clean_dir, species_to_group, contaminant_names)
+                clean_fasta(og_id, contaminants, fasta_path, clean_dir, species_to_group, contaminant_names, keep_known_contaminants)
                 print(f"[{og_id}] FASTA file cleaned")
             else:
                 print(f'[{og_id}] No fasta file found in tree directory')
         else:
             fasta_path = fasta_in_tree_dir(tree_dir, og_id)
             if fasta_path:
-                clean_fasta(og_id, contaminants, fasta_path, clean_dir, species_to_group, contaminant_names)
+                clean_fasta(og_id, contaminants, fasta_path, clean_dir, species_to_group, contaminant_names, keep_known_contaminants)
             print(f"\r  Cleaning Orthogroups: [{i}/{total_trees}]", end="", flush=True)
-       
+
     return clean_dir
        

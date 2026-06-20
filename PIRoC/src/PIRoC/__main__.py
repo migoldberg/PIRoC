@@ -38,8 +38,9 @@ def main():
     max_contaminant_purity = params["max_contaminant_purity"]
     contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
+    keep_known_contaminants = params["keep_known_contaminants"]
     loud = params["loud"]
-    
+
     # create empty dictionaries to store sequence classifications and metrics
     sequence_classifications = {} # og_id::sequence_name -> classification
     sequence_metrics = {} # og_id::sequence_name -> metrics
@@ -161,7 +162,7 @@ def main():
 
     # if the remove-contaminants flag is enabled, the function to produce clean trees is called
     if remove_contaminants:
-        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, loud)
+        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, loud, keep_known_contaminants)
         print()
         
 
