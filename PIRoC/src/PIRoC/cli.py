@@ -71,6 +71,10 @@ def init_cli() -> None:
         help="After classification remove contaminant sequences from the orthogroups."
     )
     parser.add_argument(
+        "--remove_flags", action="store_true",
+        help="After classification remove contaminant AND flagged sequences from the orthogroups."
+    )
+    parser.add_argument(
         "--keep_known_contaminants", action="store_true",
         help="After classification keep known contaminant sequences in the orthogroups."
     )
@@ -101,6 +105,7 @@ def init_cli() -> None:
     metadata_path = args.metadata
     contaminants = set(args.contaminants.split(","))
     remove_contaminants = args.remove_contaminants
+    remove_flags = args.remove_flags
     keep_known_contaminants = args.keep_known_contaminants
     loud = args.loud
     
@@ -139,6 +144,7 @@ def init_cli() -> None:
         ("metadata",             metadata_path,               True,  None),
         ("contaminants",         args.contaminants,           False, "Contaminant"),
         ("remove_contaminants",  remove_contaminants,         False, False),
+        ("remove_flags",         remove_flags,                False, False),
         ("keep_known_contaminants", keep_known_contaminants, False, False),
         ("min_support",          args.min_support,            False, 70.0),
         ("min_clean_purity",    args.min_clean_purity,      False, 0.8),
@@ -173,6 +179,7 @@ def init_cli() -> None:
         "contaminants": contaminants,
         "logger": logger,
         "remove_contaminants": remove_contaminants,
+        "remove_flags": remove_flags,
         "keep_known_contaminants": keep_known_contaminants,
         "loud": loud,
     }

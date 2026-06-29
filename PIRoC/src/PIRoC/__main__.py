@@ -38,6 +38,7 @@ def main():
     max_contaminant_purity = params["max_contaminant_purity"]
     contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
+    remove_flags = params["remove_flags"]
     keep_known_contaminants = params["keep_known_contaminants"]
     loud = params["loud"]
 
@@ -160,9 +161,9 @@ def main():
     if not loud:
         print()
 
-    # if the remove-contaminants flag is enabled, the function to produce clean trees is called
-    if remove_contaminants:
-        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, loud, keep_known_contaminants)
+    # if the remove-contaminants or remove-flags flag is enabled, the function to produce clean trees is called
+    if remove_contaminants or remove_flags:
+        clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, loud, keep_known_contaminants, remove_flags)
         print()
         
 
