@@ -91,6 +91,22 @@ def init_cli() -> None:
         help="Maximum clade target group fraction for CONTAMINANT classification (default: 0.5)"
     )
     parser.add_argument(
+        "--max_contaminant_distance", type=float, default=None,
+        help="Maximum distance for the focal group to be from known contaminant for CONTAMINANT classification (default: None)"
+    )
+    parser.add_argument(
+        "--min_average_distance", type=float, default=0.25,
+        help="Minimum average distance from all focal groups to contaiminants for distance rule to be in effect. (default: 0.25)"
+    )
+    parser.add_argument(
+        "--max_shared_fraction", type=float, default=0.33,
+        help="Maximum fraction of focal group sequences that can be shared with known contaminants for shared fraction rule to be in effect. (default: 0.33)"
+    )
+    parser.add_argument(
+        "--resolve_low_support", action="store_true",
+        help="Classify low-support FLAG sequences as CONTAMINANT when the next node up is highly supported, its sister clade is purely contaminants, and the closest sequence from another species is a contaminant."
+    )
+    parser.add_argument(
         "--loud", action="store_true",
         help="Enable detailed console output"
     )
@@ -107,6 +123,10 @@ def init_cli() -> None:
     remove_contaminants = args.remove_contaminants
     remove_flags = args.remove_flags
     keep_known_contaminants = args.keep_known_contaminants
+    max_contaminant_distance = args.max_contaminant_distance
+    min_average_distance = args.min_average_distance
+    max_shared_fraction = args.max_shared_fraction
+    resolve_low_support = args.resolve_low_support
     loud = args.loud
     
     # creates the output directory
@@ -149,6 +169,10 @@ def init_cli() -> None:
         ("min_support",          args.min_support,            False, 70.0),
         ("min_clean_purity",    args.min_clean_purity,      False, 0.8),
         ("max_contaminant_purity", args.max_contaminant_purity, False, 0.5),
+        ("max_contaminant_distance", args.max_contaminant_distance, False, None),
+        ("min_average_distance", args.min_average_distance, False, 0.25),
+        ("max_shared_fraction",  args.max_shared_fraction,  False, 0.33),
+        ("resolve_low_support",  resolve_low_support,         False, False),
         ("loud",                 loud,                        False, False),
     ]
 
@@ -176,6 +200,10 @@ def init_cli() -> None:
         "min_support": args.min_support,
         "min_clean_purity": args.min_clean_purity,
         "max_contaminant_purity": args.max_contaminant_purity,
+        "max_contaminant_distance": args.max_contaminant_distance,
+        "min_average_distance": args.min_average_distance,
+        "max_shared_fraction": args.max_shared_fraction,
+        "resolve_low_support": resolve_low_support,
         "contaminants": contaminants,
         "logger": logger,
         "remove_contaminants": remove_contaminants,

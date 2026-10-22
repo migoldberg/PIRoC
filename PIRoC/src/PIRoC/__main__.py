@@ -21,6 +21,7 @@ from .branch_length import compute_branch_length_stats
 from .classify import classify_sequence
 from .output import write_summary, write_sequence_classifications, write_sequence_lists
 from .clean_orthogroups import clean_orthogroups
+from .distance import compute_distance_rule, get_nearest_other_species_leaves
 
 def main():
     params = init_cli()
@@ -35,12 +36,18 @@ def main():
     species_to_group = params["species_to_group"]
     min_support = params["min_support"]
     min_clean_purity = params["min_clean_purity"]
+    max_contaminant_distance = params["max_contaminant_distance"]
+    min_average_distance = params["min_average_distance"]
+    max_shared_fraction = params["max_shared_fraction"]
+    resolve_low_support = params["resolve_low_support"]
     max_contaminant_purity = params["max_contaminant_purity"]
     contaminant_names = params["contaminants"]
     remove_contaminants = params["remove_contaminants"]
     remove_flags = params["remove_flags"]
     keep_known_contaminants = params["keep_known_contaminants"]
     loud = params["loud"]
+
+    n_focal_species = sum(1 for group in species_to_group.values() if group == focal_group)
 
     # create empty dictionaries to store sequence classifications and metrics
     sequence_classifications = {} # og_id::sequence_name -> classification
@@ -113,6 +120,19 @@ def main():
             tree_metrics['branch_length_long_branch_threshold'] = branch_length_stats['long_branch_threshold']
             tree_metrics['focal_leaves'] = len(focal_leaves)
 
+            distance_rule = compute_distance_rule(
+                tree = t,
+                focal_leaves = focal_leaves,
+                contaminant_leaves = contaminants_leaves,
+                max_contaminant_distance = max_contaminant_distance,
+                min_average_distance = min_average_distance,
+                max_shared_fraction = max_shared_fraction,
+                n_focal_species = n_focal_species,
+            )
+
+            # gets the closest sequence from another species for each focal leaf if the low support rule is enabled
+            nearest_neighbors = get_nearest_other_species_leaves(t, focal_leaves) if resolve_low_support else {}
+
             # loops through each focal leaf in the tree
             for sequence in focal_leaves:
                 # classifies the sequence and returns the classification and metrics
@@ -125,7 +145,9 @@ def main():
                     min_support = min_support,
                     min_clean_purity = min_clean_purity,
                     max_contaminant_purity = max_contaminant_purity,
-                    contaminant_names = contaminant_names
+                    contaminant_names = contaminant_names,
+                    distance_info = distance_rule[sequence],
+                    nearest_neighbor = nearest_neighbors.get(sequence)
                 )
 
                 # stores the sequence name and id
@@ -166,13 +188,19 @@ def main():
         clean_orthogroups(tree_dir, tree_suffix, sequence_classifications, contaminant_names, species_to_group, output_dir, loud, keep_known_contaminants, remove_flags)
         print()
         
+    distance_params = {
+        "max_contaminant_distance": max_contaminant_distance,
+        "min_average_distance": min_average_distance,
+        "max_shared_fraction": max_shared_fraction,
+        "resolve_low_support": resolve_low_support,
+    }
 
     print()
     print("\033[4mWriting Output\033[0m")
 
     # writes the summary file
     summary_file = os.path.join(output_dir, "classification_summary.txt")
-    write_summary(summary_file, focal_group, min_support, min_clean_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications)
+    write_summary(summary_file, focal_group, min_support, min_clean_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications, distance_params)
 
     sequence_classifications_file = os.path.join(output_dir, "sequence_classifications.tsv")
     write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics)

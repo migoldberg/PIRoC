@@ -8,7 +8,7 @@ import numpy as np
 from datetime import datetime
 from collections import Counter, defaultdict
 
-def write_summary(summary_file, focal_group, min_support, min_clean_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications):
+def write_summary(summary_file, focal_group, min_support, min_clean_purity, max_contaminant_purity, contaminant_names, run_metrics, sequence_classifications, distance_params):
     with open(summary_file, 'w') as f:
         f.write("PIRoC Classification Summary\n")
         f.write("=" * 60 + "\n\n")
@@ -19,6 +19,14 @@ def write_summary(summary_file, focal_group, min_support, min_clean_purity, max_
         f.write(f"  Min clean purity:   {min_clean_purity}\n")
         f.write(f"  Max contam purity:   {max_contaminant_purity}\n")
         f.write(f"  Contaminants:        {', '.join(contaminant_names)}\n\n")
+        f.write(f"  Max contam distance: {distance_params['max_contaminant_distance'] if distance_params['max_contaminant_distance'] is not None else 'off'}\n")
+
+        if distance_params['max_contaminant_distance'] is not None:
+            f.write(f"  Min background dist: {distance_params['min_average_distance']}\n")
+            f.write(f"  Max shared fraction: {distance_params['max_shared_fraction']}\n")
+            f.write("\n")
+
+        f.write(f"  Resolve low support: {distance_params['resolve_low_support']}\n\n")
         
         f.write("Processing Stats:\n")
         f.write(f"  Total trees:             {run_metrics['total_trees']}\n")
@@ -38,6 +46,11 @@ def write_summary(summary_file, focal_group, min_support, min_clean_purity, max_
 
     print(f"  Summary written to: {summary_file}")
 
+def format_distance_helper(value):
+    if value is None or value == float('inf'):
+        return "NA"
+    return f"{value:.5f}"
+
 def write_sequence_classifications(sequence_classifications_file, sequence_classifications, sequence_metrics):
     with open(sequence_classifications_file, 'w') as f:
         header = [
@@ -51,6 +64,8 @@ def write_sequence_classifications(sequence_classifications_file, sequence_class
             "Sister_Total_Leaves", "Sister_Contains_Focal_Group",
             "Sister_Contains_Contaminants", "Sister_Is_Pure_Contaminant",
             "Sister_Group_Composition",
+            "Pre_Distance_Classification","Distance_Rule_Status", "Nearest_Contaminant_Distance", "Nearest_Contaminant", "Average_Contaminant_Distance",
+            "Nearest_Other_Species", "Nearest_Other_Species_Distance",
         ]
         f.write("\t".join(header) + "\n")
         
@@ -78,6 +93,13 @@ def write_sequence_classifications(sequence_classifications_file, sequence_class
                 str(m["sister_contains_contaminants"]),
                 str(m["sister_is_pure_contaminant"]),
                 str(m["sister_group_composition"]),
+                str(m["pre_distance_classification"]),
+                str(m["distance_rule_status"]),
+                format_distance_helper(m["nearest_contaminant_distance"]),
+                str(m["nearest_contaminant"] or "NA"),
+                format_distance_helper(m["average_distance"]),
+                str(m["nearest_neighbor"] or "NA"),
+                format_distance_helper(m["nearest_neighbor_distance"]),
             ]
             f.write("\t".join(row) + "\n")
 

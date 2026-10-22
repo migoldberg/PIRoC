@@ -158,7 +158,9 @@ def classify_sequence(
     min_support, 
     min_clean_purity, 
     max_contaminant_purity, 
-    contaminant_names
+    contaminant_names,
+    distance_info=None,
+    nearest_neighbor=None
     ):
     """
     Main classification function for PIRoC.
@@ -168,6 +170,18 @@ def classify_sequence(
     # if a custom set of contaminant names is not provided in the metadata file as the "groups" column, uses the default group name "Contaminant"
     if contaminant_names is None:
         contaminant_names = {"Contaminant"}
+
+    distance_info = {
+        "distance_rule": "skipped",
+        "max_contaminant_distance": None,
+        "nearest_contaminant_distance": None,
+        "nearest_contaminant": None,
+        "average_distance": None,
+        **(distance_info or {}),
+    }
+
+    nearest_neighbor_distance, nearest_neighbor_leaf = nearest_neighbor or (None, None)
+    nearest_neighbor_name = nearest_neighbor_leaf.name if nearest_neighbor_leaf is not None else None
 
     # gets the name of the sequence
     sequence_name = sequence.name
@@ -195,7 +209,14 @@ def classify_sequence(
             "sister_is_pure_contaminant": False,
             "sister_group_composition": "",
             "sister_total_leaves": 0,
-            "classification_notes": ["sequence_at_root"]
+            "classification_notes": ["sequence_at_root"],
+            "pre_distance_classification": "FLAG",
+            "distance_rule_status": distance_info["distance_rule"],
+            "nearest_contaminant_distance": distance_info["nearest_contaminant_distance"],
+            "nearest_contaminant": distance_info["nearest_contaminant"],
+            "average_distance": distance_info["average_distance"],
+            "nearest_neighbor": nearest_neighbor_name,
+            "nearest_neighbor_distance": nearest_neighbor_distance,
         }
     
     # gets the composition of the clade the sequence is in
@@ -239,7 +260,7 @@ def classify_sequence(
     elif sequence_on_long_branch and has_contaminant_in_clade:
         # if the sequence is on a long branch AND the clade contains contaminant intruders = CONTAMINANT
         classification = "CONTAMINANT"
-        classification_notes.append("sequence_on_long_branch")
+        classification_notes.append("sequence_on_long_branch")  
         classification_notes.append("contaminant_in_clade")
         classification_notes.append("low_ctgf")
     elif high_support and clade_target_group_fraction <= max_contaminant_purity:
@@ -300,6 +321,31 @@ def classify_sequence(
         if sequence_on_long_branch:
             # if the sequence is on a long branch = FLAG
             classification_notes.append("sequence_on_long_branch")
+
+    # if the node is not highly supported, but the next node up is highly supported AND splits the clade from a pure contaminant sister clade
+    # AND the closest sequence from another species is a contaminant = CONTAMINANT
+    # only runs when nearest_neighbor is provided as a result of argument --resolve_low_support being passed
+    grandparent_node = parent_node.up
+    if (
+        nearest_neighbor_leaf is not None and
+        classification == "FLAG" and
+        not high_support and
+        grandparent_node is not None and
+        get_node_bootstrap(grandparent_node) >= min_support and
+        sister_clade_metrics["sister_is_pure_contaminant"] and
+        species_to_group.get(parse_species_name(nearest_neighbor_name), "UNKNOWN") in contaminant_names
+    ):
+        classification = "CONTAMINANT"
+        classification_notes.append("low_support_resolved_by_contaminant_neighbor")
+
+    pre_distance_classification = classification
+    if (
+        distance_info["distance_rule"] == "applied" and
+        classification != "CONTAMINANT" and
+        distance_info["nearest_contaminant_distance"] <= distance_info["max_contaminant_distance"]
+    ):
+        classification = "CONTAMINANT"
+        classification_notes.append("near_identical_to_contaminant")
     
     # creates a dictionary of metrics for the sequence
     metrics = {
@@ -326,7 +372,14 @@ def classify_sequence(
             f"{g}:{c}" for g, c in sorted(sister_clade_metrics["sister_groups"].items())
         ),
         "sister_total_leaves": sum(sister_clade_metrics["sister_species"].values()),
-        "classification_notes": classification_notes
+        "classification_notes": classification_notes,
+        "pre_distance_classification": pre_distance_classification,
+        "distance_rule_status": distance_info["distance_rule"],
+        "nearest_contaminant_distance": distance_info["nearest_contaminant_distance"],
+        "nearest_contaminant": distance_info["nearest_contaminant"],
+        "average_distance": distance_info["average_distance"],
+        "nearest_neighbor": nearest_neighbor_name,
+        "nearest_neighbor_distance": nearest_neighbor_distance,
     }
 
     # returns the classification and metrics
