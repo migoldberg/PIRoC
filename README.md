@@ -141,20 +141,25 @@ Prior to running PIRoC for this dataset, OrthoFinder (2.5.4; Emms and Kelly 2019
 
 ### Arguments/CLI Options
 
-| Argument                 | Flag(s)                        | Description                                                        | Default        |
-| ------------------------ | ------------------------------ | ------------------------------------------------------------------ | -------------- |
-| `tree_dir`               | `-t`, `--tree_dir`             | Directory containing Newick tree files and orthogroups in fasta format                              | (required)     |
-| `suffix`                 | `-s`, `--suffix`               | Tree filename suffix                                               | `.tre`         |
-| `output_dir`             | `-o`, `--output_dir`           | Output directory                                                   | `PIRoC_output` |
-| `focal_group`            | `-f`, `--focal_group`          | Name of the focal group (e.g., Mollusca)                           | (required)     |
-| `metadata`               | `-m`, `--metadata`             | TSV file with species_id and group columns                         | (required)     |
-| `contaminants`           | `--contaminants`               | Comma-separated list of known contaminant group names              | `Contaminant`  |
-| `remove_contaminants`    | `-rm`, `--remove_contaminants` | Remove contaminant sequences from orthogroups after classification | `False`        |
-| `min_support`            | `--min_support`                | Minimum bootstrap support for confident classification             | `70.0`         |
-| `min_clean_purity`      | `--min_clean_purity`          | The minimum fraction of sequences that must belong to the focal group in a clade for a CLEAN classification (upper bound of `max_contaminant_purity`)            | `0.8`          |
-| `max_contaminant_purity` | `--max_contaminant_purity`     | The highest fraction of sequences that can belong to the focal group in a clade for a CONTAMINANT classification (lower bound of `min_target_purity`)        | `0.5`          |
-| `review_flags`           | `--review-flags`               | Interactively review flagged sequences via CLI (in development)                     | `False`        |
-| `loud`                   | `--loud`                       | Enable detailed console output                        | `False`        |
+| Argument                   | Flag(s)                        | Description                                                                                                                                                                     | Default        |
+| -------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `tree_dir`                 | `-t`, `--tree_dir`             | Directory containing Newick tree files and orthogroups in FASTA format                                                                                                          | (required)     |
+| `suffix`                   | `-s`, `--suffix`               | Tree filename suffix                                                                                                                                                            | `.tre`         |
+| `output_dir`               | `-o`, `--output_dir`           | Output directory                                                                                                                                                                | `PIRoC_output` |
+| `focal_group`              | `-f`, `--focal_group`          | Name of the focal group (e.g., Mollusca)                                                                                                                                        | (required)     |
+| `metadata`                 | `-m`, `--metadata`             | TSV file with species_id and group columns                                                                                                                                      | (required)     |
+| `contaminants`             | `--contaminants`               | Comma-separated list of known contaminant group names                                                                                                                           | `Contaminant`  |
+| `remove_contaminants`      | `-rm`, `--remove_contaminants` | After classification, remove CONTAMINANT sequences from the orthogroups                                                                                                         | `False`        |
+| `remove_flags`             | `--remove_flags`               | After classification, remove both CONTAMINANT and FLAG sequences from the orthogroups                                                                                           | `False`        |
+| `keep_known_contaminants`  | `--keep_known_contaminants`    | After classification, keep sequences from the known contaminant taxa in the orthogroups                                                                                         | `False`        |
+| `min_support`              | `--min_support`                | Minimum bootstrap support for a confident classification                                                                                                                        | `70.0`         |
+| `min_clean_purity`         | `--min_clean_purity`           | Minimum fraction of sequences in a clade that must belong to the focal group for a CLEAN classification (upper bound of `max_contaminant_purity`)                               | `0.8`          |
+| `max_contaminant_purity`   | `--max_contaminant_purity`     | Maximum fraction of sequences in a clade that can belong to the focal group for a CONTAMINANT classification (lower bound of `min_clean_purity`)                                | `0.5`          |
+| `max_contaminant_distance` | `--max_contaminant_distance`   | Maximum distance between a focal group sequence and a known contaminant for a CONTAMINANT classification; not applied unless set                                               | `None`         |
+| `min_average_distance`     | `--min_average_distance`       | Minimum average distance from all focal group sequences to contaminants for the distance rule to take effect                                                                    | `0.25`         |
+| `max_shared_fraction`      | `--max_shared_fraction`        | Maximum fraction of focal group sequences that can be shared with known contaminants for the shared-fraction rule to take effect                                                | `0.33`         |
+| `resolve_low_support`      | `--resolve_low_support`        | Reclassify low-support FLAG sequences as CONTAMINANT when the next node up is highly supported, its sister clade is purely contaminants, and the closest sequence from another species is a contaminant | `False` |
+| `loud`                     | `--loud`                       | Enable detailed console output                                                                                                                                                  | `False`        |
 
 
 
